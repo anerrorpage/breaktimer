@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="styles.css">
+	<script src="https://unpkg.com/idb@6.1.0/build/iife/index-min.js"></script>
+	<script src="scripts.js"></script>
+	
+    <title>Time Calculator</title>
+	<link rel="icon" type="image/x-icon" href="https://img.icons8.com/?size=100&id=ggkq7ZKoggie&format=png&color=000000">
+    
+	
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: white;
+            color: black;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .calculator-container {
+            display: grid;
+            grid-template-columns: 1fr auto; /* Two columns: 1 for the grid, auto for the total section */
+            gap: 5px; /* Space between grid and total section */
+            align-items: start; /* Align the items to the start of the grid */
+        }
+
+        .input-grid {
+            display: grid;
+            gap: 5px;
+            grid-template-columns: repeat(2, 1fr); /* Two columns layout */
+            align-items: center;
+            justify-items: center;
+            margin: auto;
+			padding: 20px;
+			background-color: #333;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .input-group input {
+            width: 20px;
+            padding: 15px;
+            text-align: center;
+			font-size: 15px;
+			font-weight: semi-bold;
+            background-color: #1e1e1e;
+            color: #ffffff;
+            border: 3px solid #575757;
+            border-radius: 5px;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #333;
+        }
+
+        .add-more-container {
+            margin: 15px 0;
+            grid-column: span 2; /* Span both columns in the grid */
+            text-align: center;
+        }
+
+        .add-more-container a {
+            color: #00bcd4;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .result {
+            padding: 15px;
+            background-color: #333;
+        }
+
+        .result input {
+            width: 40px;
+            padding: 15px;
+            text-align: center;
+			font-size: 15px;
+			font-weight: semi-bold;
+            background-color: #1e1e1e;
+            color: #ffffff;
+            border: 3px solid #616161;
+        }
+
+        .wco-btn-box {
+            margin-top: 10px;
+            text-align: center; /* Center buttons in the box */
+        }
+
+        .wco-button {
+            background-color: #3c3c3c;
+			font-size: 20px;
+            color: #ffffff;
+            padding: 15px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            margin: 10px;
+        }
+
+        .wco-button:hover {
+            background-color: #575757;
+        }
+
+        h4 {
+            margin: 5px 0;
+            padding: 10px;
+        }
+		.navbar {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			position: fixed;
+			width: 100%;
+			top: 0;
+			left: 0;
+			z-index: 500;
+		}
+
+		nav {
+			background-color: #333;
+			padding: 1em;
+		}
+
+		nav ul {
+			list-style: none;
+			margin: 0;
+			display: flex;
+			justify-content: space-around;
+		}
+
+		nav ul li {
+			margin: 0;
+			padding: 0;
+		}
+
+		nav ul li a {
+			color: white;
+			text-decoration: none;
+			padding: 0.5em 1em;
+			display: block;
+		}
+
+		nav ul li a:hover {
+			background-color: #575757;
+		}
+
+		.page {
+			padding: 2em;
+			display: none;
+		}
+    </style>
+</head>
+<body>
+<div class="navbar">
+<nav class="navbar">
+        <nav>
+        <ul>
+            <li><a href="index.html" onclick="showPage('container')">Tracker</a></li>
+            <li><a href="OBCalc.html" onclick="showPage('obcalc')">OB Calc</a></li>
+            <li><a href="NotepadCalc.html" onclick="showPage('notepadcalc')">Notepad Calc</a></li>
+            <li><a href="fireworks.html" onclick="showPage('fireworks')">Fireworks</a></li>
+        </ul>
+</nav>
+</div>
+    <div class="calculator-container">
+        <div id="calculator">
+            <section class="wco-card-calculator">
+                <form id="calc" name="calc" method="post" target="_blank">
+                    <div id="enter-time" class="input-grid">
+                        <div class="input-group">
+                            <h4>Hours</h4>
+                            <input type="tel" name="inhour[]" maxlength="2" value="00" onfocus="clearDefaultValue(event)" onblur="restoreDefaultValue(event)" oninput="calculateTotal()">
+                        </div>
+                        <div class="input-group">
+                            <h4>Minutes</h4>
+                            <input type="tel" name="inmin[]" maxlength="2" value="00" onfocus="clearDefaultValue(event)" onblur="restoreDefaultValue(event)" oninput="calculateTotal()">
+                        </div>
+                        <div class="input-group">
+                            <input type="tel" name="inhour[]" maxlength="2" value="00" onfocus="clearDefaultValue(event)" onblur="restoreDefaultValue(event)" oninput="calculateTotal()">
+                        </div>
+                        <div class="input-group">
+                            <input type="tel" name="inmin[]" maxlength="2" value="00" onfocus="clearDefaultValue(event)" onblur="restoreDefaultValue(event)" oninput="calculateTotal()">
+                        </div>
+                        <div class="input-group">
+                            <input type="tel" name="inhour[]" maxlength="2" value="00" onfocus="clearDefaultValue(event)" onblur="restoreDefaultValue(event)" oninput="calculateTotal()">
+                        </div>
+                        <div class="input-group">
+                            <input type="tel" name="inmin[]" maxlength="2" value="00" onfocus="clearDefaultValue(event)" onblur="restoreDefaultValue(event)" oninput="calculateTotal()">
+                        </div>
+                        <div class="input-group">
+                            <input type="tel" name="inhour[]" maxlength="2" value="00" onfocus="clearDefaultValue(event)" onblur="restoreDefaultValue(event)" oninput="calculateTotal()">
+                        </div>
+                        <div class="input-group">
+                            <input type="tel" name="inmin[]" maxlength="2" value="00" onfocus="clearDefaultValue(event)" onblur="restoreDefaultValue(event)" oninput="calculateTotal()">
+                        </div>
+                        <div class="input-group">
+                            <input type="tel" name="inhour[]" maxlength="2" value="00" onfocus="clearDefaultValue(event)" onblur="restoreDefaultValue(event)" oninput="calculateTotal()">
+                        </div>
+                        <div class="input-group">
+                            <input type="tel" name="inmin[]" maxlength="2" value="00" onfocus="clearDefaultValue(event)" onblur="restoreDefaultValue(event)" oninput="calculateTotal()">
+                        </div>
+                        <!-- More initial rows can be added here if needed -->
+                    </div>
+                    <div class="add-more-container">
+                        <a id="add_more_line">+ Add More Lines</a>
+                    </div>
+                </form>
+            </section>
+        </div>
+        <div id="see-your-total" class="result">
+            <h4>See Your Total:</h4>
+            <input type="text" name="totalhour" readonly class="hr_total" maxlength="2" value="00">
+            <input type="text" name="totalmin" readonly class="mi_total" maxlength="2" value="00">
+            <input type="text" name="yourtotalhour" readonly class="your_hr_total" id="total-pay-input" maxlength="5" value="0:00">
+            <div class="wco-btn-box">
+                <button type="button" class="wco-button calculator-button" id="calculate-btn">Calculate</button>
+                <button type="button" class="wco-button calculator-button" id="clear-btn">Clear</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Function to calculate total hours and minutes
+        function calculateTotal() {
+            const hours = document.querySelectorAll('input[name="inhour[]"]');
+            const minutes = document.querySelectorAll('input[name="inmin[]"]');
+            let totalHours = 0;
+            let totalMinutes = 0;
+
+            hours.forEach(hourInput => {
+                totalHours += parseInt(hourInput.value) || 0;
+            });
+
+            minutes.forEach(minInput => {
+                totalMinutes += parseInt(minInput.value) || 0;
+            });
+
+            totalHours += Math.floor(totalMinutes / 60);
+            totalMinutes %= 60;
+
+            document.querySelector('.hr_total').value = String(totalHours).padStart(2, '0');
+            document.querySelector('.mi_total').value = String(totalMinutes).padStart(2, '0');
+            document.querySelector('#total-pay-input').value = `${totalHours}:${String(totalMinutes).padStart(2, '0')}`;
+        }
+
+        // Function to clear default value on focus
+        function clearDefaultValue(event) {
+            if (event.target.value === '00') {
+                event.target.value = '';
+            }
+        }
+
+        // Add a new row to the grid
+        document.getElementById('add_more_line').addEventListener('click', (e) => {
+            e.preventDefault();
+            const grid = document.getElementById('enter-time');
+
+            const newHourDiv = document.createElement('div');
+            newHourDiv.className = 'input-group';
+            newHourDiv.innerHTML = `
+                <input type="tel" name="inhour[]" maxlength="2" value="00" onfocus="clearDefaultValue(event)" onblur="restoreDefaultValue(event)" oninput="calculateTotal()">
+            `;
+
+            const newMinDiv = document.createElement('div');
+            newMinDiv.className = 'input-group';
+            newMinDiv.innerHTML = `
+                <input type="tel" name="inmin[]" maxlength="2" value="00" onfocus="clearDefaultValue(event)" onblur="restoreDefaultValue(event)" oninput="calculateTotal()">
+            `;
+
+            grid.appendChild(newHourDiv);
+            grid.appendChild(newMinDiv);
+        });
+
+        // Restore default value on blur if empty
+        function restoreDefaultValue(event) {
+            if (event.target.value === '') {
+                event.target.value = '00';
+            }
+        }
+
+        // Attach input and focus event listeners to existing inputs
+        document.addEventListener('DOMContentLoaded', () => {
+            const inputs = document.querySelectorAll('input[type="tel"]');
+            inputs.forEach(input => {
+                input.addEventListener('focus', clearDefaultValue);
+                input.addEventListener('blur', restoreDefaultValue);
+                input.addEventListener('input', calculateTotal);
+            });
+        });
+
+        // Clear the form
+        document.getElementById('clear-btn').addEventListener('click', () => {
+            const inputs = document.querySelectorAll('input[type="tel"]');
+            inputs.forEach(input => input.value = '00');
+
+            document.querySelector('.hr_total').value = '00';
+            document.querySelector('.mi_total').value = '00';
+            document.querySelector('#total-pay-input').value = '0:00';
+        });
+		
+		
+function showPage(pageId) {
+            var pages = document.getElementsByClassName('page');
+            for (var i = 0; i < pages.length; i++) {
+                pages[i].style.display = 'container';
+            }
+            document.getElementById(pageId).style.display = 'block';
+        }
+    </script>
+</body>
+</html>
