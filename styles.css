@@ -1,232 +1,238 @@
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap');
+@import "compass/reset";
+
+
+
+
 body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: auto;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background: white;
-            color: black;
-            transition: background-color 0.3s, color 0.3s;
-        }
+	z-index: 3;
+    margin:0;
+	padding:0;
+	height:100vh;
+    font-family: 'Raleway', sans-serif;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(to bottom, #000, #240334);
+}
+	
+.container {
+	z-index: 4;
+	position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
 
-        body.dark-mode {
-            background-color: #121212;
-            color: white;
-        }
+.top-section {
+    text-align: center;
+}
 
-        .container {
-            padding: 20px;
-            width: min(1000px, 90%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
-            background: rgba(255, 255, 255, 0.20);
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(10px);
-        }
+.profile-section {
+    margin-bottom: 50px;
+}
 
-        h2 {
-            margin-bottom: 20px;
-            font-size: 30px;
-            color: white;
-        }
+.profile-pic {
+    border-radius: 60%;
+    width: 250px;
+    height: 250px;
+}
 
-        .main {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-        }
+h1 {
+    font-size: 4em;
+    margin: 20px 0 10px;
+	color:#fff;
+}
 
-        table {
-            width: 80%;
-			height: 50%;
-            border-collapse: collapse;
-			//border: solid, 1px, black;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            margin-right: 15px;
-        }
+.description {
+    font-size: 1.5em;
+    margin-bottom: 50px;
+	color:#fff;
+}
 
-        th, td {
-            padding: 10px;
-            text-align: center;
-            color: white;
-        }
+.identity {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
 
-        th {
-            background-color: #575757;
-            color: white;
-        }
+.identity-pic {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
 
-        td {
-            background-color: grey;
-        }
+.bottom-section {
+    text-align: center;
+	
+}
 
-        tbody tr:nth-child(even) td {
-            background-color: grey;
-            color: white;
-        }
+.buttons {
+    margin-bottom: 100px;
+}
 
-        .summary {
-            width: 30%;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-        }
+.info-btn, .creations-btn, .tracker-btn {
+    background: linear-gradient(to right, #ff416c, #ff4b2b);
+    border: none;
+	color: #fff;
+    border-radius: 15px;
+    padding: 20px 20px;
+    font-size: 1em;
+    margin: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+    position: relative;
+    display: inline-block;
+    text-decoration: none;
+    text-transform: uppercase;
+	text-align: center;
+    letter-spacing: 4px;
+    overflow: hidden;
+}
 
-        .summary div {
-            width: 100%;
-            padding: 15px;
-            background-color: #575757;
-            color: #ffffff;
-            margin-bottom: 15px;
-			//border: solid, 1px, black;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+.info-btn:hover, .creations-btn:hover, .tracker-btn:hover {
+    background: linear-gradient(to right, #ff4b2b, #ff416c);
+    color: #fff;
+	box-shadow: 0 0 20px #ff4b2b;
+     -webkit-box-reflect:below 1px linear-gradient(transparent, #0002);
+}
 
-        .summary div span {
-            font-weight: bold;
-        }
+.social-section {
+    display: flex;
+    flex-direction: row;
+	justify-content: center;
+}
 
-        .timestamp {
-            margin-top: 20px;
-            display: flex;
-            flex-wrap: wrap;
-            width: 100%;
-        }
+.twitch, .youtube, .steam, .discord, .kofi {
+	border-radius: 20px;
+	width: 100px;
+    display: inline-block;
+	justify-content: conter;
+	align-items: center;
+    padding: 20px 30px;
+    color: #fff;
+    text-decoration: none;
+    text-transform: uppercase;
+	text-align: center;
+    transition: 0.5s;
+    letter-spacing: 4px;
+    overflow: hidden;
+    margin-right: 30px;
+}
 
-        .timestamp div {
-            margin-left: -10px;
-            color: black;
-        }
+.identity {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
 
-        .timestamp button {
-            font-family: 'Segoe UI', Verdana, sans-serif;
-            padding: 10px 20px;
-			margin-right: 20px;
-            font-size: 15px;
-            background-color: #575757;
-            color: white;
-            border: solid, 1px, black;
-            cursor: pointer;
-			transition: all 0.2s;
-        }
+.identity-pic {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin: 0 50px;
+}
 
-        .timestamp button:disabled {
-            background-color: #999;
-            cursor: not-allowed;
-        }
+/*a {
+	border-radius: 20px;
+	width: 100px;
+    display: inline-block;
+	justify-content: conter;
+	align-items: center;
+    padding: 20px 30px;
+    color: #fff;
+    text-decoration: none;
+    text-transform: uppercase;
+	text-align: center;
+    transition: 0.5s;
+    letter-spacing: 4px;
+    overflow: hidden;
+    margin-right: 30px;
+}*/
 
-        .timestamp button:hover:not(:disabled) {
-            background-color: #878787;
-			border: solid, 1px;
-			transform: translateY(-3px);
-        }
 
-        .dropdown {
-            width: 100%;
-            padding: 5px;
-            border: 1px solid #ddd;
-            background-color: #FFFFFF;
-            cursor: pointer;
-        }
+/*a:hover{
+    background: #fff;
+    color: #050801;
+    box-shadow: 0 0 5px #fff,
+                0 0 25px #000,
+                0 0 50px #fff,
+                0 0 100px #fff;
+     -webkit-box-reflect:below 1px linear-gradient(transparent, #0005);*/
+}
 
-        .error-message {
-			padding-top: 10px;
-            color: red;
-            display: none;
-        }
-        
-        #bgPreview {
-            max-width: 100%;
-            height: auto;
-            border-radius: 10px;
-        }
-		
-		
-		.footer {
-			position: absolute;
-			height: 28px;
-			font-size: 10px;
-			bottom: 5px;
-			right: 5px;
-			background-color: black;
-			color: white;
-			padding: 5px;
-		}
-		
-		.navbar {
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			padding: 0;
-			position: fixed;
-			width: 100%;
-			top: 0;
-			left: 0;
-			z-index: 500;
-		}
+a span{
+    display: block;
+	justify-content: center;
+}
 
-		nav {
-			background-color: #333;
-			padding: 10px;
-		}
+/* Additional classes for icons */
+.twitch { background: linear-gradient(#6441a4, #6441a4); }
+.youtube { background: linear-gradient(to right, #ff0000, #cc0000); }
+.steam { background: linear-gradient(to right, #1b2838, #2a475e); }
+.discord { background: linear-gradient(#7289da, #99aab5); }
+.kofi { background: linear-gradient(to right, #29abe0, #007bb5); }
 
-		nav ul {
-			list-style: none;
-			margin: 0;
-			padding: 0;
-			display: flex;
-			justify-content: space-around;
-		}
+.twitch:hover{
+	background: #6441a5;
+    color: #fff;
+	box-shadow: 0 0 50px #6441a5;
+     -webkit-box-reflect:below 1px linear-gradient(transparent, #0002);
+}
 
-		nav ul li {
-			margin: 0;
-			padding: 0;
-		}
+.youtube:hover{
+	background: #ff0000;
+    color: #fff;
+	box-shadow: 0 0 50px #ff0000;
+     -webkit-box-reflect:below 1px linear-gradient(transparent, #0002);
+}
 
-		nav ul li a {
-			color: white;
-			text-decoration: none;
-			padding: 0.5em 1em;
-			display: block;
-			transition: all 0.5s;
-		}
+.steam:hover{
+	background: #1da1f2;
+    color: #fff;
+	box-shadow: 0 0 50px #1da1f2;
+     -webkit-box-reflect:below 1px linear-gradient(transparent, #0002);
+}
 
-		nav ul li a:hover {
-			background-color: #575757;
-			transform: translateY(-3px);
-		}
+.discord:hover{
+	background: #7289da;
+    color: #fff;
+	box-shadow: 0 0 50px #7289da;
+     -webkit-box-reflect:below 1px linear-gradient(transparent, #0002);
+}
 
-		.page {
-			padding: 2em;
-			display: none;
-		}
-		
-		/* Animation for underline */
-		  nav ul li a::before {
-			content: '';
-			position: absolute;
-			width: 100%;
-			height: 3px;
-			bottom: 0;
-			left: 0;
-			background-color: #fff;
-			transform: scaleX(0);
-			transition: transform 0.3s ease-in-out;
-		  }
+.kofi:hover{
+	background: #29abe0;
+    color: #fff;
+	box-shadow: 0 0 50px #29abe0;
+     -webkit-box-reflect:below 1px linear-gradient(transparent, #0002);
+}
 
-		  nav ul li a:hover::before {
-			transform: scaleX(1);
-		  }
-		  
-		  @keyframes slideIn {
-		to {
-		  transform: translateY(0);
-		  opacity: 1;
-		}
+
+
+.stars, .twinkling {
+	position:absolute;
+	top:0; bottom:0;
+	left:0; right:0;
+	width:100%; height:100%;
+}
+
+.stars {
+	z-index: 0;
+	background: #000 url('https://i.ibb.co/g91MwKZ/stars.png') repeat top center;
+}
+
+.twinkling{
+	z-index: 1;
+	background:transparent url('https://i.ibb.co/pnJQm6V/twinkling.png') repeat top center;
+	animation: move-twink-back 150s linear infinite;
+}
+
+@keyframes move-twink-back {
+	from {background-position:0 0;}
+	to {background-position:-10000px 5000px;}
+}
+
