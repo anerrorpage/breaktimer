@@ -1,30 +1,34 @@
 @import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap');
 @import "compass/reset";
 
-
-
-
+html,
 body {
 	z-index: 3;
-    margin:0;
-	padding:0;
-	height:100vh;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
     font-family: 'Raleway', sans-serif;
     color: #fff;
     display: flex;
     justify-content: center;
     align-items: center;
     background: linear-gradient(to bottom, #000, #240334);
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-content: center;
+
 }
 	
 .container {
 	z-index: 4;
-	position: relative;
+    position: relative;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
     height: 100vh;
+    flex-wrap: nowrap;
+    align-content: center;
+    align-items: center;
+    justify-content: center;
 
 .top-section {
     text-align: center;
@@ -41,21 +45,30 @@ body {
 }
 
 h1 {
+	display: block;
+    margin-block-start: 0.10em;
+    margin-block-end: 0.10em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    font-weight: bold;
+    unicode-bidi: isolate;
     font-size: 4em;
-    margin: 20px 0 10px;
 	color:#fff;
 }
 
 .description {
     font-size: 1.5em;
-    margin-bottom: 50px;
 	color:#fff;
+	margin-bottom: 100px;
 }
 
 .identity {
     display: flex;
     justify-content: center;
-    margin-top: 20px;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-content: center;
+    align-items: center;
 }
 
 .identity-pic {
@@ -71,11 +84,12 @@ h1 {
 }
 
 .buttons {
-    margin-bottom: 100px;
+    margin-bottom: 50px;
 }
 
 .info-btn, .creations-btn, .tracker-btn {
     background: linear-gradient(to right, #ff416c, #ff4b2b);
+	width: 278px;
     border: none;
 	color: #fff;
     border-radius: 15px;
@@ -109,25 +123,21 @@ h1 {
 .twitch, .youtube, .steam, .discord, .kofi {
 	border-radius: 20px;
 	width: 100px;
-    display: inline-block;
+	display: inline-block;
 	justify-content: conter;
 	align-items: center;
-    padding: 20px 30px;
-    color: #fff;
-    text-decoration: none;
-    text-transform: uppercase;
+	padding: 20px 30px;
+	color: #fff;
+	text-decoration: none;
+	text-transform: uppercase;
 	text-align: center;
-    transition: 0.5s;
-    letter-spacing: 4px;
-    overflow: hidden;
-    margin-right: 30px;
+	transition: 0.5s;
+	letter-spacing: 4px;
+	overflow: hidden;
+	margin-right: 10px;
+	margin-left: 10px;
 }
 
-.identity {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-}
 
 .identity-pic {
     width: 50px;
@@ -211,7 +221,7 @@ a span{
      -webkit-box-reflect:below 1px linear-gradient(transparent, #0002);
 }
 
-
+/*=======================================================================================*/
 
 .stars, .twinkling {
 	position:absolute;
@@ -235,4 +245,30 @@ a span{
 	from {background-position:0 0;}
 	to {background-position:-10000px 5000px;}
 }
+
+/*======================================================================================*/
+
+
+
+/*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
