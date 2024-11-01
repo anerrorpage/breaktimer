@@ -47,6 +47,8 @@ function createDropdown() {
         <option value="">Select...</option>
         <option value="Away">Away</option>
         <option value="Mobile Usage">Mobile Usage</option>
+	<option value="Floorwalk">Floorwalk</option>
+ 	<option value="Restroom Break">Restroom Break</option>
         <option value="Sleeping">Sleeping</option>
     `;
     return select;
