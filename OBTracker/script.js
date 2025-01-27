@@ -78,11 +78,20 @@ function updateTotalBreakTime() {
     const totalHrs = Math.floor(totalMs / 3600000);
     const totalMins = Math.floor((totalMs % 3600000) / 60000);
 
+    // Save total break time to localStorage
+    localStorage.setItem('totalBreakTime', totalMs); 
+
     document.getElementById('totalBreakTime').innerText = `${pad(totalHrs)}:${pad(totalMins)}`;
 
-    const allowableBreakMs = (1 * 3600 + 20 * 60) * 1000;
-    const overBreakMs = Math.max(totalMs - allowableBreakMs, 0);
+    const allowableBreakMs = (1 * 3600 + 20 * 60) * 1000; // Allowable break time: 1 hour 20 minutes
+    const remainingMs = Math.max(allowableBreakMs - totalMs, 0); // Calculate remaining time
+    const remainingHrs = Math.floor(remainingMs / 3600000);
+    const remainingMins = Math.floor((remainingMs % 3600000) / 60000);
 
+    // Display remaining break time
+    document.getElementById('remainingBreakTime').innerText = ` ${pad(remainingHrs)}:${pad(remainingMins)}`;
+
+    const overBreakMs = Math.max(totalMs - allowableBreakMs, 0);
     const overHrs = Math.floor(overBreakMs / 3600000);
     const overMins = Math.floor((overBreakMs % 3600000) / 60000);
 
@@ -133,6 +142,8 @@ function clearContent() {
         currentRow = -1; // Reset current row index
         document.getElementById('totalBreakTime').innerText = '00:00';
         document.getElementById('overBreakTime').innerText = '00:00';
+        document.getElementById('remainingBreakTime').innerText = '00:00';
+        localStorage.removeItem('totalBreakTime'); // Remove saved break time
         document.getElementById('outButton').disabled = false; // Enable 'Out' button
         document.getElementById('inButton').disabled = true; // Disable 'In' button
         document.getElementById('errorMessage').style.display = 'none'; // Hide error message
@@ -142,8 +153,31 @@ function clearContent() {
 function initializePage() {
     loadDataFromStorage();
     loadBackgroundFromStorage();
-}
+	// Initialize the remaining break time
+    updateTotalBreakTime(); // This will calculate and display the remaining break time as well
 
+// Check if there's a saved total break time
+    const savedTotalMs = localStorage.getItem('totalBreakTime');
+    if (savedTotalMs) {
+        const totalMs = parseInt(savedTotalMs);
+        const totalHrs = Math.floor(totalMs / 3600000);
+        const totalMins = Math.floor((totalMs % 3600000) / 60000);
+
+        document.getElementById('totalBreakTime').innerText = `${pad(totalHrs)}:${pad(totalMins)}`;
+
+        const allowableBreakMs = (1 * 3600 + 20 * 60) * 1000; // Allowable break time: 1 hour 20 minutes
+        const remainingMs = Math.max(allowableBreakMs - totalMs, 0); // Calculate remaining time
+        const remainingHrs = Math.floor(remainingMs / 3600000);
+        const remainingMins = Math.floor((remainingMs % 3600000) / 60000);
+
+        // Display remaining break time
+        document.getElementById('remainingBreakTime').innerText = `Remaining Break Time: ${pad(remainingHrs)}:${pad(remainingMins)}`;
+    } else {
+        // If no saved break time, initialize to zero
+        document.getElementById('totalBreakTime').innerText = '00:00';
+        document.getElementById('remainingBreakTime').innerText = 'Remaining Break Time: 01:20';
+    }
+}
 
 // Function to initialize IndexedDB
 function initializeDB() {
@@ -347,5 +381,3 @@ function showPage(pageId) {
 
 // Initialize the page
 initializePage();
-
-
