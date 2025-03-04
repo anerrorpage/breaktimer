@@ -235,13 +235,13 @@ a span{
 	background: #000 url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/1231630/stars.png') repeat top center;
 }
 
-.twinkling{
+.twinkling {
 	z-index: 1;
 	background: transparent url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/1231630/twinkling.png") repeat;
 	background-size: 1000px 1000px;') repeat top center;
 }
 
-.clouds{
+.clouds {
 	width:10000px;
 	height: 100%;
 	background: transparent url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/1231630/clouds_repeat.png") repeat;
