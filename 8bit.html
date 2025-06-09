@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lexz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        
+        body {
+            font-family: 'Press Start 2P', cursive;
+            background-color: #1a1a2e;
+            color: #e2e2e2;
+            image-rendering: pixelated;
+        }
+		
+		.background-overlay {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background-image: url('wallpaper.jpg');
+			background-size: cover;
+			background-position: center;
+			background-attachment: fixed;
+			z-index: -1;
+			filter: blur(3px) brightness(1);
+			opacity: 1;
+		}
+        
+        .pixel-border {
+            border-style: solid;
+            border-width: 4px;
+            border-color: #e2e2e2 #808080 #808080 #e2e2e2;
+        }
+        
+        .btn-pixel {
+            position: relative;
+            display: inline-block;
+            padding: 10px 20px;
+            color: white;
+            background: #372c29;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 12px;
+            border: none;
+            outline: none;
+            box-shadow: 
+                inset -4px -4px 0px 0px #e2e2e2,
+                inset 4px 4px 0px 0px #4b3f3a;
+            transition: all 0.1s;
+        }
+        
+        .btn-pixel:hover, .btn-pixel:focus {
+            background: #6e5c54;
+            box-shadow: 
+                inset -2px -2px 0px 0px #4b3c6b,
+                inset 2px 2px 0px 0px #e2e2e2;
+        }
+        
+        .btn-pixel:active {
+            box-shadow: 
+                inset 4px 4px 0px 0px #4b3c6b,
+                inset -4px -4px 0px 0px #8b7cb5;
+        }
+        
+        .game-card {
+            transition: transform 0.3s;
+        }
+        
+        .game-card:hover {
+            transform: scale(1.05);
+        }
+        
+        .pixel-art {
+            image-rendering: pixelated;
+			box-shadow: 
+                inset -4px -4px 0px 0px #e2e2e2,
+                inset 4px 4px 0px 0px #4b3f3a;
+        }
+        
+        /* CRT screen effect */
+        .crt::after {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: rgba(50, 16, 16, 0.1);
+            opacity: 0.15;
+            z-index: 2;
+            pointer-events: none;
+            background: linear-gradient(rgba(50, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 4px, 4px 100%;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- CRT overlay effect -->
+	<div class="background-overlay"></div>
+	<div class="fixed inset-0 pointer-events-none crt z-50"></div>
+    
+    <!-- Header -->
+    <header class="sticky fixed z-50 top-0 bg-stone-600 text-white py-4 px-6 pixel-border"><!---->
+        <div class="container mx-auto flex flex-col md:flex-row justify-between items-center">
+            <div class="flex items-center mb-4 md:mb-0">
+                <i class="fas fa-gamepad text-3xl mr-3"></i>
+                <h1 class="text-2xl md:text-3xl">Lexz</h1>
+            </div>
+            <nav class="flex space-x-2 md:space-x-4">
+                <a href="#" class="btn-pixel">Home</a>
+                <a href="#games" class="btn-pixel">Games</a>
+                <a href="#about" class="btn-pixel">About</a>
+                <a href="#contact" class="btn-pixel">Projects</a>
+            </nav>
+        </div>
+    </header>
+    <!-- Hero Section -->
+    <section class="py-20 px-10"><!--bg-gradient-to-b from-stone-600 to-stone-900-->
+        <div class="container mx-auto flex flex-col md:flex-row items-center justify-center">
+            <div class="min-w-84 md:mb-0">
+                <h2 class="text-3xl md:text-5xl text-yellow-300 mb-4">SAMPLE</h2>
+                <p class="text-[20px] mb-6 text-black font-semibold">Graphics Designer
+<br>Server Moderator/Management<br>Computer Technician/Repair</p>
+                <div class="flex space-x-4">
+                    <button class="px-4 py-4 btn-pixel bg-green-600 hover:bg-green-700">PLAY NOW</button>
+                    <a href="OBTracker/timer.html" target="_blank" class="px-4 py-4 btn-pixel bg-red-600 hover:bg-red-700">PROJECTS</a>
+                </div>
+            </div>
+            <div class="min-w-80 flex justify-center">
+                <img src="profile.png" alt="8-bit character" class="w-64 h-64 pixel-art pixel-border bg-stone-800 p-2">
+            </div>
+        </div>
+    </section>
+    
+    <!-- Featured Games -->
+    <section id="games" class="px-10"><!-- bg-stone-900-->
+        <div class="container mx-auto">
+             <!--<h2 class="text-3xl text-center text-yellow-300 mb-12"></h2>-->
+            <div class="flex flex-wrap justify-center gap-4">
+                    <a href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer" class="px-6 py-2 text-black text-center font-semibold rounded-lg transform hover:-translate-y-2 transition duration-900"><img src="icons/youtube_icon.png" class="py-5"/><span>YOUTUBE</span></a>
+					<a href="https://www.discord.com" target="_blank" rel="noopener noreferrer" class="px-6 py-2 text-black text-center font-semibold rounded-lg transform hover:-translate-y-2 transition duration-900"><img src="icons/discord_icon.png" class="py-5"/><span>DISCORD</span></a>
+					<a href="https://www.github.com" target="_blank" rel="noopener noreferrer" class="px-6 py-2 text-black text-center font-semibold rounded-lg transform hover:-translate-y-2 transition duration-900"><img src="icons/github_icon.png" class="py-5"/><span>GITHUB</span></a>
+					<a href="https://www.Twitch.com" target="_blank" rel="noopener noreferrer" class="px-6 py-2 text-black text-center font-semibold rounded-lg transform hover:-translate-y-2 transition duration-900"><img src="icons/twitch_icon.png" class="py-5"/><span>TWITCH</span></a>
+					<a href="https://www.reddit.com" target="_blank" rel="noopener noreferrer" class="px-6 py-2 text-black text-center font-semibold rounded-lg transform hover:-translate-y-2 transition duration-900"><img src="icons/reddit_icon.png" class="py-5"/><span>REDDIT</span></a>
+					<a href="https://www.kick.com" target="_blank" rel="noopener noreferrer" class="px-6 py-2 text-black text-center font-semibold rounded-lg transform hover:-translate-y-2 transition duration-900"><img src="icons/kick_icon.png" class="py-5"/><span>KICK</span></a>
+					<a href="https://www.steamcommunity.com/iammilkshake" target="_blank" rel="noopener noreferrer" class="px-6 py-2 text-black text-center font-semibold rounded-lg transform hover:-translate-y-2 transition duration-900"><img src="icons/Steam.png" class="py-5"/><span>STEAM</span></a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Stats Section -->
+    <!--<section class="py-12 px-6 bg-stone-950">
+        <div class="container mx-auto">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                <div class="p-4 pixel-border">
+                    <div class="text-4xl text-yellow-300 mb-2">50+</div>
+                    <div class="text-sm">GAMES</div>
+                </div>
+                <div class="p-4 pixel-border">
+                    <div class="text-4xl text-yellow-300 mb-2">1M+</div>
+                    <div class="text-sm">PLAYERS</div>
+                </div>
+                <div class="p-4 pixel-border">
+                    <div class="text-4xl text-yellow-300 mb-2">24/7</div>
+                    <div class="text-sm">AVAILABLE</div>
+                </div>
+                <div class="p-4 pixel-border">
+                    <div class="text-4xl text-yellow-300 mb-2">100%</div>
+                    <div class="text-sm">FREE TO PLAY</div>
+                </div>
+            </div>
+        </div>
+    </section>-->
+    
+    <!-- Footer -->
+    <footer class="pt-24 text-center">
+    <div class="container mx-auto">
+        <div class="flex justify-center space-x-6 mb-6">
+            <a href="#" class="text-yellow-700 hover:text-white text-2xl" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="text-yellow-700 hover:text-white text-2xl" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+            <a href="#" class="text-yellow-700 hover:text-white text-2xl" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+        </div>
+        <p class="text-gray-700 text-sm mb-4">© 2025 Lexz. ALL RIGHTS RESERVED.</p>
+        <div class="flex justify-center space-x-4 text-xs">
+            <a href="#" class="text-gray-700 hover:text-white">PRIVACY POLICY</a>
+            <a href="#" class="text-gray-700 hover:text-white">TERMS OF SERVICE</a>
+            <a href="#" class="text-gray-700 hover:text-white">COOKIE POLICY</a>
+        </div>
+    </div>
+</footer>
+    
+    <!-- Floating game console -->
+    <div class="fixed bottom-4 right-4 w-16 h-16 bg-red-600 rounded-full flex items-center justify-center pixel-border cursor-pointer hover:bg-red-700 transition-all z-60">
+    <i class="fas fa-gamepad text-2xl text-white"></i>
+</div>
+    
+    <script>
+        // Simple animation for buttons
+        document.querySelectorAll('.btn-pixel').forEach(button => {
+            button.addEventListener('mousedown', () => {
+                button.style.transform = 'translateY(2px)';
+            });
+            
+            button.addEventListener('mouseup', () => {
+                button.style.transform = 'translateY(0)';
+            });
+            
+            button.addEventListener('mouseleave', () => {
+                button.style.transform = 'translateY(0)';
+            });
+        });
+        
+        // Simple console log for play buttons
+        document.querySelectorAll('[class*="bg-white-600"]').forEach(button => {
+            button.addEventListener('click', () => {
+                const gameName = button.closest('.game-card').querySelector('h3').textContent;
+                console.log(`Launching game: ${gameName}`);
+                alert(`Thanks for your interest in ${gameName}! This is a demo site - the game would launch here in a real implementation.`);
+            });
+        });
+    </script>
+</body>
+</html>
