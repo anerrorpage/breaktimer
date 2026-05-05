@@ -198,9 +198,33 @@
 </footer>
     
     <!-- Floating game console -->
-    <div class="fixed bottom-4 right-4 w-16 h-16 bg-red-600 rounded-full flex items-center justify-center pixel-border cursor-pointer hover:bg-red-700 transition-all z-60">
-    <i class="fas fa-gamepad text-2xl text-white"></i>
-</div>
+    <div id="gameLauncher" class="fixed bottom-4 right-4 w-16 h-16 bg-red-600 rounded-full flex items-center justify-center pixel-border cursor-pointer hover:bg-red-700 transition-all z-60">
+        <i class="fas fa-gamepad text-2xl text-white"></i>
+    </div>
+
+    <!-- Snake Game Modal -->
+    <div id="gameModal" class="hidden fixed inset-0 bg-black bg-opacity-80 z-[100] flex items-center justify-center p-4">
+        <div class="bg-stone-800 pixel-border p-6 max-w-md w-full text-center">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-yellow-300 text-lg">SNAKE</h3>
+                <button id="closeGame" class="btn-pixel bg-red-700" aria-label="Close">X</button>
+            </div>
+            <p class="text-xs text-gray-300 mb-3">SCORE: <span id="gameScore">0</span></p>
+            <canvas id="gameCanvas" width="320" height="320" class="mx-auto bg-black pixel-border" style="image-rendering: pixelated;"></canvas>
+            <p class="text-[10px] text-gray-400 mt-3">USE ARROW KEYS OR WASD &middot; TAP BUTTONS ON MOBILE</p>
+            <div class="grid grid-cols-3 gap-2 mt-3 max-w-[180px] mx-auto">
+                <div></div>
+                <button class="btn-pixel" data-dir="up">▲</button>
+                <div></div>
+                <button class="btn-pixel" data-dir="left">◀</button>
+                <button id="restartGame" class="btn-pixel bg-green-700">RST</button>
+                <button class="btn-pixel" data-dir="right">▶</button>
+                <div></div>
+                <button class="btn-pixel" data-dir="down">▼</button>
+                <div></div>
+            </div>
+        </div>
+    </div>
     
     <script>
         // Simple animation for buttons
@@ -226,6 +250,127 @@
                 alert(`Thanks for your interest in ${gameName}! This is a demo site - the game would launch here in a real implementation.`);
             });
         });
+
+        // Snake game launched from the floating gamepad button
+        (function () {
+            const launcher = document.getElementById('gameLauncher');
+            const modal = document.getElementById('gameModal');
+            const closeBtn = document.getElementById('closeGame');
+            const restartBtn = document.getElementById('restartGame');
+            const canvas = document.getElementById('gameCanvas');
+            const ctx = canvas.getContext('2d');
+            const scoreEl = document.getElementById('gameScore');
+
+            const TILE = 16;
+            const COLS = canvas.width / TILE;
+            const ROWS = canvas.height / TILE;
+
+            let snake, dir, nextDir, food, score, loopId, alive;
+
+            function reset() {
+                snake = [{ x: 8, y: 8 }, { x: 7, y: 8 }, { x: 6, y: 8 }];
+                dir = { x: 1, y: 0 };
+                nextDir = dir;
+                score = 0;
+                alive = true;
+                placeFood();
+                scoreEl.textContent = '0';
+            }
+
+            function placeFood() {
+                while (true) {
+                    const f = { x: Math.floor(Math.random() * COLS), y: Math.floor(Math.random() * ROWS) };
+                    if (!snake.some(s => s.x === f.x && s.y === f.y)) { food = f; return; }
+                }
+            }
+
+            function step() {
+                if (!alive) return;
+                if ((nextDir.x !== -dir.x || nextDir.y !== -dir.y)) dir = nextDir;
+                const head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
+                if (head.x < 0 || head.y < 0 || head.x >= COLS || head.y >= ROWS ||
+                    snake.some(s => s.x === head.x && s.y === head.y)) {
+                    alive = false;
+                    draw();
+                    return;
+                }
+                snake.unshift(head);
+                if (head.x === food.x && head.y === food.y) {
+                    score += 10;
+                    scoreEl.textContent = score;
+                    placeFood();
+                } else {
+                    snake.pop();
+                }
+                draw();
+            }
+
+            function draw() {
+                ctx.fillStyle = '#0a0a14';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#ef4444';
+                ctx.fillRect(food.x * TILE, food.y * TILE, TILE, TILE);
+                snake.forEach((s, i) => {
+                    ctx.fillStyle = i === 0 ? '#fde047' : '#22c55e';
+                    ctx.fillRect(s.x * TILE, s.y * TILE, TILE - 1, TILE - 1);
+                });
+                if (!alive) {
+                    ctx.fillStyle = 'rgba(0,0,0,0.7)';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.fillStyle = '#fde047';
+                    ctx.font = '20px "Press Start 2P", monospace';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2);
+                    ctx.font = '10px "Press Start 2P", monospace';
+                    ctx.fillText('PRESS RST', canvas.width / 2, canvas.height / 2 + 24);
+                }
+            }
+
+            function start() {
+                reset();
+                clearInterval(loopId);
+                loopId = setInterval(step, 110);
+                draw();
+            }
+
+            function stop() {
+                clearInterval(loopId);
+                loopId = null;
+            }
+
+            function open() {
+                modal.classList.remove('hidden');
+                start();
+            }
+
+            function close() {
+                modal.classList.add('hidden');
+                stop();
+            }
+
+            launcher.addEventListener('click', open);
+            closeBtn.addEventListener('click', close);
+            restartBtn.addEventListener('click', start);
+
+            modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
+
+            const keyMap = {
+                ArrowUp: { x: 0, y: -1 }, w: { x: 0, y: -1 }, W: { x: 0, y: -1 },
+                ArrowDown: { x: 0, y: 1 }, s: { x: 0, y: 1 }, S: { x: 0, y: 1 },
+                ArrowLeft: { x: -1, y: 0 }, a: { x: -1, y: 0 }, A: { x: -1, y: 0 },
+                ArrowRight: { x: 1, y: 0 }, d: { x: 1, y: 0 }, D: { x: 1, y: 0 },
+            };
+            document.addEventListener('keydown', (e) => {
+                if (modal.classList.contains('hidden')) return;
+                if (keyMap[e.key]) { nextDir = keyMap[e.key]; e.preventDefault(); }
+                if (e.key === 'Escape') close();
+            });
+
+            const dirMap = { up: { x: 0, y: -1 }, down: { x: 0, y: 1 }, left: { x: -1, y: 0 }, right: { x: 1, y: 0 } };
+            document.querySelectorAll('[data-dir]').forEach(b => {
+                b.addEventListener('click', () => { nextDir = dirMap[b.dataset.dir]; });
+            });
+        })();
     </script>
 </body>
 </html>
