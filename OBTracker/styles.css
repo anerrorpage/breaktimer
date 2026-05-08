@@ -149,17 +149,43 @@ body {
         }
 		
 		.clock {
-			position: absolute;
-			top: 50%;
-			left: 50%;
-			transform: translateX(-50%) translateY(-50%);
-			color: #ffffff;
-			font-size: 60px;
-			font-family: Orbitron;
+			display: block;
+			width: 100%;
+			text-align: center;
+			background-color: #e8e8e8;
+			color: #222222;
+			font-size: 36px;
+			font-family: Orbitron, monospace;
 			letter-spacing: 7px;
+			padding: 8px 0;
+			transition: background-color 0.3s, color 0.3s;
 		}
-		
-		
+
+		body.dark-mode .clock {
+			background-color: #1a1a1a;
+			color: #a0d4ff;
+		}
+
+
+		.header-wrapper {
+			position: fixed;
+			width: 100%;
+			top: 0;
+			left: 0;
+			z-index: 500;
+			display: flex;
+			flex-direction: column;
+			align-items: stretch;
+		}
+
+		.navbar {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			padding: 0;
+			width: 100%;
+		}
+
 		.footer {
 			position: absolute;
 			height: 28px;
@@ -170,20 +196,8 @@ body {
 			color: white;
 			padding: 5px;
 		}
-		
-		.navbar {
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			padding: 0;
-			position: fixed;
-			width: 100%;
-			top: 0;
-			left: 0;
-			z-index: 500;
-		}
 
-		nav {
+nav {
 			background-color: #333;
 			padding: 10px;
 		}

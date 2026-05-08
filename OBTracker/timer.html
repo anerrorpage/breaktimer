@@ -10,12 +10,12 @@
 	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1513095105774673"
      crossorigin="anonymous"></script>
 	<link rel="icon" type="image/x-icon" href="https://img.icons8.com/?size=100&id=ggkq7ZKoggie&format=png&color=000000">
- 
+	<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
     <title>Break Tracker</title>
 	
 </head>
 <body>
-<div class="navbar">
+<div class="header-wrapper">
 <nav class="navbar">
         <nav>
         <ul>
@@ -25,6 +25,8 @@
             <li><a href="fireworks.html" onclick="showPage('fireworks')">Fireworks</a></li>
         </ul>
 </nav>
+</nav>
+<div class="clock" id="digitalClock">00:00:00</div>
 </div>
 <div class="container" class="page">
     <h2>BREAK TRACKER</h2>
@@ -64,6 +66,18 @@
     <p id="errorMessage" class="error-message">Error: Please complete the current record before adding a new one.</p>
 </div>
 <img id="bgPreview" style="display: none; width: 0px; height: 0px;">
+
+<script>
+  function updateClock() {
+    const now = new Date();
+    const h = String(now.getHours()).padStart(2, '0');
+    const m = String(now.getMinutes()).padStart(2, '0');
+    const s = String(now.getSeconds()).padStart(2, '0');
+    document.getElementById('digitalClock').textContent = h + ':' + m + ':' + s;
+  }
+  updateClock();
+  setInterval(updateClock, 1000);
+</script>
 
 <div id="contact" class="page" style="display: none;">
 <div id="instructions">Click the blank for Magic<br>Press Spacebar or Click</div>
