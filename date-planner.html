@@ -4,6 +4,46 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Date Planner 💖</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+.pixel-border {
+    border-style: solid;
+    border-width: 4px;
+    border-color: #e2e2e2 #808080 #808080 #e2e2e2;
+}
+.btn-pixel {
+    position: relative;
+    display: inline-block;
+    padding: 10px 20px;
+    color: white;
+    background: #372c29;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 12px;
+    border: none;
+    outline: none;
+    box-shadow:
+        inset -4px -4px 0px 0px #e2e2e2,
+        inset 4px 4px 0px 0px #4b3f3a;
+    transition: all 0.1s;
+    font-family: 'Press Start 2P', cursive;
+    text-decoration: none;
+    cursor: pointer;
+}
+.btn-pixel:hover, .btn-pixel:focus {
+    background: #6e5c54;
+    box-shadow:
+        inset -2px -2px 0px 0px #4b3c6b,
+        inset 2px 2px 0px 0px #e2e2e2;
+}
+.btn-pixel:active {
+    box-shadow:
+        inset 4px 4px 0px 0px #4b3c6b,
+        inset -4px -4px 0px 0px #8b7cb5;
+}
+</style>
 <style>
 /* ── Reset & base ─────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -15,6 +55,7 @@ body {
   align-items: center;
   justify-content: center;
   padding: 16px;
+  padding-top: 96px;
   background: linear-gradient(135deg, #fff0f4 0%, #fce4ec 45%, #f3e8ff 100%);
   perspective: 1000px;
 }
@@ -319,6 +360,23 @@ body {
 </style>
 </head>
 <body>
+
+<!-- Navbar -->
+<header class="fixed z-50 top-0 left-0 right-0 bg-stone-600 text-white py-4 px-6 pixel-border">
+    <div class="container mx-auto flex flex-col md:flex-row justify-between items-center">
+        <div class="flex items-center mb-4 md:mb-0">
+            <i class="fas fa-gamepad text-3xl mr-3"></i>
+            <h1 style="font-family:'Press Start 2P',cursive;" class="text-2xl md:text-3xl">Lexz</h1>
+        </div>
+        <nav class="flex space-x-2 md:space-x-4">
+            <a href="/" class="btn-pixel">Home</a>
+            <a href="/#games" class="btn-pixel">Games</a>
+            <a href="/#about" class="btn-pixel">About</a>
+            <a href="/#contact" class="btn-pixel">Projects</a>
+            <a href="date-planner.html" class="btn-pixel">Date Planner</a>
+        </nav>
+    </div>
+</header>
 
 <!-- Background blobs -->
 <div class="blob" style="width:340px;height:340px;background:#fda4af;left:3%;top:8%;--dur:9s"></div>
