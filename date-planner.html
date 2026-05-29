@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Date Planner 💖</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+.pixel-border {
+    border-style: solid;
+    border-width: 4px;
+    border-color: #e2e2e2 #808080 #808080 #e2e2e2;
+}
+.btn-pixel {
+    position: relative;
+    display: inline-block;
+    padding: 10px 20px;
+    color: white;
+    background: #372c29;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 12px;
+    border: none;
+    outline: none;
+    box-shadow:
+        inset -4px -4px 0px 0px #e2e2e2,
+        inset 4px 4px 0px 0px #4b3f3a;
+    transition: all 0.1s;
+    font-family: 'Press Start 2P', cursive;
+    text-decoration: none;
+    cursor: pointer;
+}
+.btn-pixel:hover, .btn-pixel:focus {
+    background: #6e5c54;
+    box-shadow:
+        inset -2px -2px 0px 0px #4b3c6b,
+        inset 2px 2px 0px 0px #e2e2e2;
+}
+.btn-pixel:active {
+    box-shadow:
+        inset 4px 4px 0px 0px #4b3c6b,
+        inset -4px -4px 0px 0px #8b7cb5;
+}
+</style>
+<style>
+/* ── Reset & base ─────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  min-height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  padding-top: 96px;
+  background: linear-gradient(135deg, #fff0f4 0%, #fce4ec 45%, #f3e8ff 100%);
+  perspective: 1000px;
+}
+
+/* ── Background blobs ─────────────────────────────────── */
+.blob {
+  position: fixed;
+  border-radius: 50%;
+  opacity: .28;
+  filter: blur(60px);
+  pointer-events: none;
+  animation: blobFloat var(--dur) ease-in-out infinite;
+}
+@keyframes blobFloat {
+  0%,100% { transform: translate(0,0) scale(1); }
+  25%      { transform: translate(30px,-20px) scale(1.07); }
+  50%      { transform: translate(-18px,28px) scale(0.95); }
+  75%      { transform: translate(12px,-10px) scale(1.04); }
+}
+
+/* ── Card ─────────────────────────────────────────────── */
+#app {
+  position: relative;
+  width: 100%;
+  max-width: 380px;
+  transform-style: preserve-3d;
+}
+.card {
+  background: rgba(255,255,255,.78);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-radius: 28px;
+  box-shadow: 0 12px 50px rgba(236,72,153,.15), 0 2px 8px rgba(0,0,0,.06);
+  padding: 40px 32px;
+  text-align: center;
+  transform-style: preserve-3d;
+  will-change: transform;
+  transition: transform .08s linear;
+}
+
+/* ── Step transitions ─────────────────────────────────── */
+.step-wrap { width: 100%; }
+
+@keyframes enterRight {
+  from { opacity:0; transform: translateX(60px) scale(.96); filter:blur(4px); }
+  to   { opacity:1; transform: translateX(0)    scale(1);   filter:blur(0);   }
+}
+@keyframes enterLeft {
+  from { opacity:0; transform: translateX(-60px) scale(.96); filter:blur(4px); }
+  to   { opacity:1; transform: translateX(0)     scale(1);   filter:blur(0);   }
+}
+@keyframes enterScale {
+  from { opacity:0; transform: scale(.88); filter:blur(4px); }
+  to   { opacity:1; transform: scale(1);   filter:blur(0);   }
+}
+@keyframes exitRight {
+  from { opacity:1; transform: translateX(0)     scale(1);   filter:blur(0); }
+  to   { opacity:0; transform: translateX(-60px) scale(.96); filter:blur(4px); }
+}
+@keyframes exitLeft {
+  from { opacity:1; transform: translateX(0)    scale(1);   filter:blur(0); }
+  to   { opacity:0; transform: translateX(60px) scale(.96); filter:blur(4px); }
+}
+@keyframes exitScale {
+  from { opacity:1; transform: scale(1);   filter:blur(0); }
+  to   { opacity:0; transform: scale(.88); filter:blur(4px); }
+}
+
+/* ── Stagger children ─────────────────────────────────── */
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(18px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+.stagger > * {
+  opacity: 0;
+  animation: fadeUp .45s cubic-bezier(.34,1.56,.64,1) forwards;
+}
+.stagger > *:nth-child(1)  { animation-delay:.04s }
+.stagger > *:nth-child(2)  { animation-delay:.11s }
+.stagger > *:nth-child(3)  { animation-delay:.18s }
+.stagger > *:nth-child(4)  { animation-delay:.25s }
+.stagger > *:nth-child(5)  { animation-delay:.32s }
+.stagger > *:nth-child(6)  { animation-delay:.39s }
+
+/* ── Typography ───────────────────────────────────────── */
+.emoji    { font-size: 3.2rem; display:block; margin-bottom:12px; }
+.title    { font-size: 1.35rem; font-weight:700; color:#f43f5e; line-height:1.4; margin-bottom:6px; }
+.subtitle { font-size: .8rem; color:#aaa; margin-bottom:26px; }
+
+/* ── Deco hearts (ask/surprised) ──────────────────────── */
+.deco-heart {
+  position: absolute;
+  pointer-events: none;
+  user-select: none;
+  color: #fda4af;
+}
+.deco-pulse  { animation: pulse 2.2s ease-in-out infinite; }
+.deco-bounce { animation: bounceY 1.6s ease-in-out infinite; }
+@keyframes pulse  { 0%,100%{transform:scale(1);opacity:.55} 50%{transform:scale(1.35);opacity:1} }
+@keyframes bounceY{ 0%,100%{transform:translateY(0)} 50%{transform:translateY(-7px)} }
+
+/* ── Floating hearts ──────────────────────────────────── */
+.float-heart {
+  position: absolute;
+  pointer-events: none;
+  user-select: none;
+  color: #fda4af;
+  bottom: 8%;
+  animation: floatUp var(--fdur) ease-out forwards;
+}
+@keyframes floatUp {
+  0%   { transform:translateY(0) scale(.5) rotate(var(--frot)); opacity:0; }
+  20%  { opacity:1; }
+  100% { transform:translateY(-110px) scale(1) rotate(var(--frot2)); opacity:0; }
+}
+
+/* ── Buttons ──────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 1rem;
+  border-radius: 999px;
+  padding: 12px 32px;
+  position: relative;
+  overflow: hidden;
+  transition: transform .15s cubic-bezier(.34,1.56,.64,1),
+              background .12s, box-shadow .15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-primary {
+  background: #f43f5e;
+  color: #fff;
+  box-shadow: 0 4px 18px rgba(244,63,94,.32);
+}
+.btn-primary:hover  { background:#e11d48; box-shadow:0 6px 22px rgba(244,63,94,.4); transform:scale(1.04); }
+.btn-primary:active { transform:scale(.96); }
+.btn-ghost  { background:#f3f4f6; color:#9ca3af; cursor:not-allowed; user-select:none; }
+.btn-full   { width:100%; padding:13px; font-size:1.05rem; }
+.btn-disabled { background:#f3f4f6; color:#d1d5db; cursor:not-allowed; }
+
+/* Ripple */
+.ripple {
+  position: absolute;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.4);
+  pointer-events: none;
+  transform: scale(0);
+  animation: rippleOut .55s ease-out forwards;
+}
+@keyframes rippleOut {
+  to { transform:scale(22); opacity:0; }
+}
+
+/* ── "No" button ──────────────────────────────────────── */
+#no-btn {
+  transition: transform .35s cubic-bezier(.34,1.56,.64,1);
+}
+
+/* ── Btn row ──────────────────────────────────────────── */
+.btn-row {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  align-items: center;
+  min-height: 52px;
+  position: relative;
+}
+
+/* ── Calendar ─────────────────────────────────────────── */
+.cal-box   { background:#fff1f4; border-radius:18px; padding:16px; margin-bottom:14px; }
+.cal-nav   { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+.cal-month-wrap { overflow:hidden; position:relative; height:22px; width:160px; text-align:center; margin:0 auto; }
+.cal-month-label {
+  font-size:.85rem; font-weight:700; color:#f43f5e;
+  position:absolute; width:100%; text-align:center;
+}
+@keyframes calSlideInR  { from{transform:translateX(24px);opacity:0} to{transform:translateX(0);opacity:1} }
+@keyframes calSlideInL  { from{transform:translateX(-24px);opacity:0} to{transform:translateX(0);opacity:1} }
+@keyframes calSlideOutR { from{transform:translateX(0);opacity:1} to{transform:translateX(-24px);opacity:0} }
+@keyframes calSlideOutL { from{transform:translateX(0);opacity:1} to{transform:translateX(24px);opacity:0} }
+
+.cal-nav-btn {
+  background:none; border:none; cursor:pointer;
+  color:#f43f5e; font-size:1.2rem; padding:4px 8px;
+  border-radius:50%;
+  transition: background .12s, transform .15s cubic-bezier(.34,1.56,.64,1);
+}
+.cal-nav-btn:hover  { background:#fce7f3; transform:scale(1.18); }
+.cal-nav-btn:active { transform:scale(.88); }
+
+.cal-grid    { display:grid; grid-template-columns:repeat(7,1fr); gap:2px; text-align:center; }
+.cal-header  { font-size:.62rem; color:#9ca3af; font-weight:600; padding:3px 0; }
+.cal-day {
+  font-size:.7rem; font-weight:500; padding:6px 2px; border-radius:50%;
+  cursor:pointer; color:#374151;
+  transition: background .12s, color .12s, transform .15s cubic-bezier(.34,1.56,.64,1);
+  background: none; border:none; font-family:inherit;
+}
+.cal-day:hover:not(.disabled):not(.selected) { background:#fce7f3; transform:scale(1.22); }
+.cal-day:active:not(.disabled) { transform:scale(.88); }
+.cal-day.disabled { color:#d1d5db; cursor:not-allowed; }
+.cal-day.selected { background:#f43f5e; color:#fff; transform:scale(1.18); box-shadow:0 2px 8px rgba(244,63,94,.3); }
+
+/* cal grid slide */
+.cal-days-wrap { position:relative; overflow:hidden; }
+.cal-days {
+  display: grid; grid-template-columns:repeat(7,1fr); gap:2px; text-align:center;
+}
+@keyframes daysInR  { from{transform:translateX(28px);opacity:0} to{transform:translateX(0);opacity:1} }
+@keyframes daysInL  { from{transform:translateX(-28px);opacity:0} to{transform:translateX(0);opacity:1} }
+
+/* ── Time picker ──────────────────────────────────────── */
+.time-box { background:#faf5ff; border-radius:18px; padding:16px; margin-bottom:14px; }
+.time-label { font-size:.75rem; font-weight:600; color:#a855f7; margin-bottom:10px; display:flex; align-items:center; gap:6px; }
+.time-row { display:flex; gap:8px; align-items:center; justify-content:center; }
+.time-select {
+  background:#fff; border:1.5px solid #e9d5ff; border-radius:12px;
+  padding:8px 6px; font-size:.85rem; color:#374151; cursor:pointer;
+  outline:none; transition:border-color .15s, box-shadow .15s; font-family:inherit;
+}
+.time-select:focus { border-color:#a855f7; box-shadow:0 0 0 3px rgba(168,85,247,.12); }
+.time-colon {
+  color:#a855f7; font-weight:700; font-size:1.1rem;
+  animation: blink 1.2s step-start infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
+.ampm-wrap { display:flex; gap:4px; }
+.ampm-btn {
+  background:#fff; border:1.5px solid #e9d5ff; border-radius:12px;
+  padding:8px 12px; font-size:.78rem; font-weight:600; color:#6b7280;
+  cursor:pointer; transition:all .2s cubic-bezier(.34,1.56,.64,1); font-family:inherit;
+}
+.ampm-btn:hover { transform:scale(1.08); }
+.ampm-btn.active { background:#a855f7; color:#fff; border-color:#a855f7; transform:scale(1.06); box-shadow:0 3px 10px rgba(168,85,247,.3); }
+
+/* ── Section label ────────────────────────────────────── */
+.section-label { font-size:.75rem; font-weight:600; margin-bottom:10px; display:flex; align-items:center; gap:6px; }
+.section-label.pink   { color:#f43f5e; }
+.section-label.purple { color:#a855f7; }
+
+/* ── Food grid ────────────────────────────────────────── */
+.food-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:20px; }
+.food-btn {
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+  padding:16px 8px; border-radius:18px; border:2px solid #f3f4f6;
+  background:#fafafa; cursor:pointer; font-family:inherit;
+  transition: border-color .15s, background .15s, transform .2s cubic-bezier(.34,1.56,.64,1), box-shadow .15s;
+}
+.food-btn:hover:not(.selected) { border-color:#fda4af; background:#fff1f4; transform:translateY(-3px) scale(1.05); }
+.food-btn:active { transform:scale(.93); }
+.food-btn.selected {
+  border-color:#f43f5e; background:#fff1f4;
+  transform:scale(1.08); box-shadow:0 6px 20px rgba(244,63,94,.2);
+  animation: foodPop .45s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes foodPop { 0%{transform:scale(1)} 60%{transform:scale(1.15)} 100%{transform:scale(1.08)} }
+.food-emoji { font-size:1.7rem; transition:transform .3s cubic-bezier(.34,1.56,.64,1); }
+.food-btn.selected .food-emoji { animation:wiggle .5s ease-in-out; }
+@keyframes wiggle { 0%,100%{transform:rotate(0)} 25%{transform:rotate(-12deg) scale(1.2)} 75%{transform:rotate(12deg) scale(1.2)} }
+.food-label { font-size:.72rem; font-weight:600; color:#6b7280; transition:color .15s; }
+.food-btn.selected .food-label { color:#f43f5e; }
+
+/* ── Finale summary ───────────────────────────────────── */
+.summary-box { background:#fff1f4; border-radius:18px; padding:16px; text-align:left; margin:14px 0; }
+.summary-row {
+  display:flex; align-items:center; gap:10px;
+  font-size:.85rem; font-weight:600; color:#374151;
+  margin-bottom:8px; opacity:0;
+  animation: slideInRow .45s cubic-bezier(.34,1.56,.64,1) forwards;
+}
+.summary-row:last-child { margin-bottom:0; }
+@keyframes slideInRow { from{opacity:0;transform:translateX(-16px)} to{opacity:1;transform:translateX(0)} }
+
+/* ── Hint text ────────────────────────────────────────── */
+.hint {
+  margin-top:14px; font-size:.72rem; color:#f9a8d4;
+  font-style:italic; min-height:18px;
+  opacity:0; transition:opacity .3s;
+}
+.hint.show { opacity:1; }
+
+/* ── Start over ───────────────────────────────────────── */
+.btn-restart {
+  margin-top:18px; background:none; border:none; font-size:.72rem;
+  color:#d1d5db; cursor:pointer; text-decoration:underline;
+  font-family:inherit; transition:color .15s;
+}
+.btn-restart:hover { color:#fda4af; }
+
+/* ── Entrance animation for food items ───────────────── */
+.food-btn {
+  opacity:0;
+  animation: fadeUp .4s cubic-bezier(.34,1.56,.64,1) forwards;
+}
+</style>
+</head>
+<body>
+
+<!-- Navbar -->
+<header class="fixed z-50 top-0 left-0 right-0 bg-stone-600 text-white py-4 px-6 pixel-border">
+    <div class="container mx-auto flex flex-col md:flex-row justify-between items-center">
+        <div class="flex items-center mb-4 md:mb-0">
+            <i class="fas fa-gamepad text-3xl mr-3"></i>
+            <h1 style="font-family:'Press Start 2P',cursive;" class="text-2xl md:text-3xl">Lexz</h1>
+        </div>
+        <nav class="flex space-x-2 md:space-x-4">
+            <a href="/" class="btn-pixel">Home</a>
+            <a href="/#games" class="btn-pixel">Games</a>
+            <a href="/#about" class="btn-pixel">About</a>
+            <a href="/#contact" class="btn-pixel">Projects</a>
+            <a href="date-planner.html" class="btn-pixel">Date Planner</a>
+        </nav>
+    </div>
+</header>
+
+<!-- Background blobs -->
+<div class="blob" style="width:340px;height:340px;background:#fda4af;left:3%;top:8%;--dur:9s"></div>
+<div class="blob" style="width:280px;height:280px;background:#e879f9;left:62%;top:58%;--dur:12s;animation-delay:-4s"></div>
+<div class="blob" style="width:220px;height:220px;background:#f9a8d4;left:68%;top:3%;--dur:8s;animation-delay:-2s"></div>
+<div class="blob" style="width:200px;height:200px;background:#c084fc;left:8%;top:62%;--dur:11s;animation-delay:-6s"></div>
+
+<div id="app"></div>
+
+<script>
+/* ═══════════════════════════════════════════════════════
+   State
+═══════════════════════════════════════════════════════ */
+const STEPS = ['ask','surprised','date','food','finale'];
+const FOODS = [
+  {id:'pizza',  emoji:'🍕', label:'Pizza'},
+  {id:'sushi',  emoji:'🍣', label:'Sushi'},
+  {id:'burger', emoji:'🍔', label:'Burger'},
+  {id:'pasta',  emoji:'🍝', label:'Pasta'},
+  {id:'tacos',  emoji:'🌮', label:'Tacos'},
+  {id:'ramen',  emoji:'🍜', label:'Ramen'},
+];
+const MONTHS = ['January','February','March','April','May','June',
+                'July','August','September','October','November','December'];
+
+const state = {
+  step: 'ask',
+  direction: 1,
+  noX: 0, noY: 0, noAttempts: 0,
+  calYear: new Date().getFullYear(),
+  calMonth: new Date().getMonth(),
+  calDir: 0,
+  selectedDay: null,
+  selectedHour: 7,
+  selectedMin: '00',
+  selectedPer: 'PM',
+  selectedFood: null,
+};
+const today = new Date();
+
+/* ═══════════════════════════════════════════════════════
+   Helpers
+═══════════════════════════════════════════════════════ */
+function daysInMonth(y, m)  { return new Date(y, m + 1, 0).getDate(); }
+function firstDayOf(y, m)   { return new Date(y, m, 1).getDay(); }
+
+function addRipple(btn, e) {
+  const r  = btn.getBoundingClientRect();
+  const rp = document.createElement('span');
+  rp.className = 'ripple';
+  rp.style.left = (e.clientX - r.left - 4) + 'px';
+  rp.style.top  = (e.clientY - r.top  - 4) + 'px';
+  btn.appendChild(rp);
+  rp.addEventListener('animationend', () => rp.remove());
+}
+
+function spawnHearts(container, count = 12) {
+  for (let i = 0; i < count; i++) {
+    setTimeout(() => {
+      const h = document.createElement('span');
+      h.className = 'float-heart';
+      h.textContent = '♥';
+      const sz = 11 + Math.random() * 13;
+      const rot1 = (Math.random() * 30 - 15) + 'deg';
+      const rot2 = (Math.random() * 30 - 15) + 'deg';
+      h.style.cssText = `left:${Math.random()*90}%;font-size:${sz}px;--fdur:${1.5+Math.random()*.8}s;--frot:${rot1};--frot2:${rot2};`;
+      container.appendChild(h);
+      h.addEventListener('animationend', () => h.remove());
+    }, i * 90);
+  }
+}
+
+/* ── Tilt effect ─────────────────────────────────────── */
+function enableTilt(card) {
+  card.addEventListener('mousemove', e => {
+    const r  = card.getBoundingClientRect();
+    const px = (e.clientX - r.left) / r.width  - 0.5;
+    const py = (e.clientY - r.top)  / r.height - 0.5;
+    card.style.transform = `rotateX(${-py*8}deg) rotateY(${px*8}deg)`;
+  });
+  card.addEventListener('mouseleave', () => {
+    card.style.transform = '';
+  });
+}
+
+/* ── Step transition ─────────────────────────────────── */
+let currentStepEl = null;
+
+function goTo(nextStep) {
+  const fromIdx = STEPS.indexOf(state.step);
+  const toIdx   = STEPS.indexOf(nextStep);
+  state.direction = toIdx > fromIdx ? 1 : -1;
+
+  const old = currentStepEl;
+  if (old) {
+    const outAnim = toIdx > fromIdx ? 'exitRight' : 'exitLeft';
+    old.style.animation = `${outAnim} .22s ease-in forwards`;
+    old.addEventListener('animationend', () => old.remove(), { once: true });
+  }
+
+  state.step = nextStep;
+  const el = buildStep(nextStep);
+  const inAnim = (nextStep === 'ask' || nextStep === 'surprised' || nextStep === 'finale')
+    ? 'enterScale' : (state.direction === 1 ? 'enterRight' : 'enterLeft');
+  el.style.animation = `${inAnim} .4s cubic-bezier(.34,1.2,.64,1) forwards`;
+  document.getElementById('app').appendChild(el);
+  currentStepEl = el;
+}
+
+/* ═══════════════════════════════════════════════════════
+   Step builders
+═══════════════════════════════════════════════════════ */
+
+/* ── Step 1: Ask ──────────────────────────────────────── */
+function buildAsk() {
+  const wrap = document.createElement('div');
+  wrap.className = 'step-wrap';
+
+  const card = document.createElement('div');
+  card.className = 'card';
+
+  // deco hearts
+  const d1 = document.createElement('span');
+  d1.className = 'deco-heart deco-pulse';
+  d1.textContent = '♥';
+  d1.style.cssText = 'top:18px;right:22px;font-size:1.2rem;';
+
+  const d2 = document.createElement('span');
+  d2.className = 'deco-heart deco-bounce';
+  d2.textContent = '♥';
+  d2.style.cssText = 'bottom:22px;left:20px;font-size:1rem;';
+
+  const inner = document.createElement('div');
+  inner.className = 'stagger';
+
+  const em = document.createElement('span');
+  em.className = 'emoji';
+  em.textContent = '🥺';
+
+  const h1 = document.createElement('h1');
+  h1.className = 'title';
+  h1.textContent = 'hey, will you go on a date with me?';
+
+  const sub = document.createElement('p');
+  sub.className = 'subtitle';
+  sub.textContent = 'pretty please...';
+
+  const row = document.createElement('div');
+  row.className = 'btn-row';
+
+  const btnYes = document.createElement('button');
+  btnYes.className = 'btn btn-primary';
+  btnYes.innerHTML = 'Yes 💖';
+  btnYes.addEventListener('click', e => {
+    addRipple(btnYes, e);
+    setTimeout(() => goTo('surprised'), 80);
+  });
+
+  const btnNo = document.createElement('button');
+  btnNo.className = 'btn btn-ghost';
+  btnNo.id = 'no-btn';
+  btnNo.textContent = 'No';
+  btnNo.style.transform = `translate(${state.noX}px, ${state.noY}px)`;
+
+  const hint = document.createElement('p');
+  hint.className = 'hint';
+  hint.textContent = "that button doesn't work hehe 🤭";
+  if (state.noAttempts >= 3) hint.classList.add('show');
+
+  const moveNo = () => {
+    state.noAttempts++;
+    if (state.noAttempts > 0) btnNo.textContent = 'No 😤';
+    if (state.noAttempts >= 3) hint.classList.add('show');
+    const cr = row.getBoundingClientRect();
+    const br = btnNo.getBoundingClientRect();
+    const maxX = (cr.width  - br.width)  / 2 - 10;
+    const maxY = (cr.height - br.height) / 2 - 10;
+    state.noX = (Math.random() * 2 - 1) * Math.min(maxX, 90);
+    state.noY = (Math.random() * 2 - 1) * Math.min(maxY, 28);
+    btnNo.style.transform = `translate(${state.noX}px,${state.noY}px)`;
+  };
+  btnNo.addEventListener('mouseenter', moveNo);
+  btnNo.addEventListener('touchstart',  moveNo);
+
+  row.append(btnYes, btnNo);
+  inner.append(em, h1, sub, row);
+  card.append(d1, d2, inner, hint);
+  wrap.appendChild(card);
+  enableTilt(card);
+  return wrap;
+}
+
+/* ── Step 2: Surprised ────────────────────────────────── */
+function buildSurprised() {
+  const wrap = document.createElement('div');
+  wrap.className = 'step-wrap';
+
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.style.overflow = 'hidden';
+
+  const inner = document.createElement('div');
+  inner.className = 'stagger';
+
+  const em = document.createElement('span');
+  em.className = 'emoji';
+  em.textContent = '😱';
+  em.style.animation = 'fadeUp .45s cubic-bezier(.34,1.56,.64,1) forwards, wobble .7s ease-in-out .35s 1';
+  // add wobble keyframe dynamically once
+  if (!document.getElementById('wobble-kf')) {
+    const s = document.createElement('style');
+    s.id = 'wobble-kf';
+    s.textContent = `@keyframes wobble{0%,100%{transform:rotate(0) scale(1)} 25%{transform:rotate(-10deg) scale(1.18)} 75%{transform:rotate(10deg) scale(1.18)}}`;
+    document.head.appendChild(s);
+  }
+
+  const h2 = document.createElement('h1');
+  h2.className = 'title';
+  h2.textContent = 'wait, you actually said yes??';
+
+  const sub = document.createElement('p');
+  sub.className = 'subtitle';
+  sub.textContent = 'omg omg omg okay okay okay—';
+
+  const btn = document.createElement('button');
+  btn.className = 'btn btn-primary';
+  btn.innerHTML = 'okay go on 🥰';
+  btn.addEventListener('click', e => {
+    addRipple(btn, e);
+    setTimeout(() => goTo('date'), 80);
+  });
+
+  inner.append(em, h2, sub, btn);
+  card.appendChild(inner);
+  wrap.appendChild(card);
+
+  enableTilt(card);
+  // spawn hearts after mount
+  requestAnimationFrame(() => spawnHearts(card, 14));
+  return wrap;
+}
+
+/* ── Step 3: Date ─────────────────────────────────────── */
+function buildDate() {
+  const wrap = document.createElement('div');
+  wrap.className = 'step-wrap';
+
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.style.textAlign = 'left';
+
+  // Header
+  const header = document.createElement('div');
+  header.style.cssText = 'text-align:center;margin-bottom:18px;';
+  header.innerHTML = `<span style="font-size:2rem;display:block;margin-bottom:4px">📅</span>
+    <h2 class="title" style="font-size:1.2rem">so when are you free?</h2>
+    <p class="subtitle" style="margin-bottom:0">pick a date and time</p>`;
+
+  // Calendar
+  const calBox = document.createElement('div');
+  calBox.className = 'cal-box';
+
+  const calLabel = document.createElement('div');
+  calLabel.className = 'section-label pink';
+  calLabel.innerHTML = '📅 pick a date';
+
+  const calNav = document.createElement('div');
+  calNav.className = 'cal-nav';
+
+  const prevBtn = document.createElement('button');
+  prevBtn.className = 'cal-nav-btn';
+  prevBtn.textContent = '‹';
+
+  const monthWrap = document.createElement('div');
+  monthWrap.className = 'cal-month-wrap';
+
+  const monthLabel = document.createElement('span');
+  monthLabel.className = 'cal-month-label';
+  monthLabel.textContent = `${MONTHS[state.calMonth]} ${state.calYear}`;
+
+  monthWrap.appendChild(monthLabel);
+
+  const nextBtn = document.createElement('button');
+  nextBtn.className = 'cal-nav-btn';
+  nextBtn.textContent = '›';
+
+  calNav.append(prevBtn, monthWrap, nextBtn);
+
+  const headerRow = document.createElement('div');
+  headerRow.className = 'cal-grid';
+  headerRow.style.marginBottom = '2px';
+  ['Su','Mo','Tu','We','Th','Fr','Sa'].forEach(d => {
+    const cell = document.createElement('div');
+    cell.className = 'cal-header';
+    cell.textContent = d;
+    headerRow.appendChild(cell);
+  });
+
+  const daysWrap = document.createElement('div');
+  daysWrap.className = 'cal-days-wrap';
+
+  function renderDays(animDir) {
+    const old = daysWrap.querySelector('.cal-days');
+    if (old && animDir !== 0) {
+      const outAnim = animDir > 0 ? 'calSlideOutR' : 'calSlideOutL';
+      old.style.animation = `${outAnim} .18s ease-in forwards`;
+      old.addEventListener('animationend', () => old.remove(), { once: true });
+    } else if (old) {
+      old.remove();
+    }
+
+    const grid = document.createElement('div');
+    grid.className = 'cal-days';
+    if (animDir !== 0) {
+      const inAnim = animDir > 0 ? 'daysInR' : 'daysInL';
+      grid.style.animation = `${inAnim} .22s ease-out forwards`;
+    }
+
+    for (let i = 0; i < firstDayOf(state.calYear, state.calMonth); i++) {
+      grid.appendChild(document.createElement('div'));
+    }
+    const dim = daysInMonth(state.calYear, state.calMonth);
+    for (let d = 1; d <= dim; d++) {
+      const btn = document.createElement('button');
+      btn.className = 'cal-day';
+      btn.textContent = d;
+      const isPast = new Date(state.calYear, state.calMonth, d) <
+        new Date(today.getFullYear(), today.getMonth(), today.getDate());
+      if (isPast)                btn.classList.add('disabled');
+      if (d === state.selectedDay) btn.classList.add('selected');
+      if (!isPast) {
+        btn.addEventListener('click', () => {
+          state.selectedDay = d;
+          renderDays(0);
+          updateNextBtn();
+        });
+      }
+      grid.appendChild(btn);
+    }
+    daysWrap.appendChild(grid);
+  }
+
+  renderDays(0);
+
+  prevBtn.addEventListener('click', () => {
+    state.calDir = -1;
+    if (state.calMonth === 0) { state.calMonth = 11; state.calYear--; }
+    else state.calMonth--;
+    state.selectedDay = null;
+    animateMonthLabel(-1);
+    renderDays(-1);
+    updateNextBtn();
+  });
+  nextBtn.addEventListener('click', () => {
+    state.calDir = 1;
+    if (state.calMonth === 11) { state.calMonth = 0; state.calYear++; }
+    else state.calMonth++;
+    state.selectedDay = null;
+    animateMonthLabel(1);
+    renderDays(1);
+    updateNextBtn();
+  });
+
+  function animateMonthLabel(dir) {
+    const old = monthWrap.querySelector('.cal-month-label');
+    if (old) {
+      const outAnim = dir > 0 ? 'calSlideOutR' : 'calSlideOutL';
+      old.style.animation = `${outAnim} .18s ease-in forwards`;
+      old.addEventListener('animationend', () => old.remove(), { once: true });
+    }
+    const newLabel = document.createElement('span');
+    newLabel.className = 'cal-month-label';
+    newLabel.textContent = `${MONTHS[state.calMonth]} ${state.calYear}`;
+    const inAnim = dir > 0 ? 'calSlideInR' : 'calSlideInL';
+    newLabel.style.animation = `${inAnim} .22s ease-out forwards`;
+    monthWrap.appendChild(newLabel);
+  }
+
+  calBox.append(calLabel, calNav, headerRow, daysWrap);
+
+  // Time picker
+  const timeBox = document.createElement('div');
+  timeBox.className = 'time-box';
+
+  const timeLabel = document.createElement('div');
+  timeLabel.className = 'section-label purple';
+  timeLabel.innerHTML = '🕐 what time?';
+
+  const timeRow = document.createElement('div');
+  timeRow.className = 'time-row';
+
+  const hourSel = document.createElement('select');
+  hourSel.className = 'time-select';
+  for (let h = 1; h <= 12; h++) {
+    const o = document.createElement('option');
+    o.value = h; o.textContent = String(h).padStart(2,'0');
+    if (h === state.selectedHour) o.selected = true;
+    hourSel.appendChild(o);
+  }
+  hourSel.onchange = () => state.selectedHour = Number(hourSel.value);
+
+  const colon = document.createElement('span');
+  colon.className = 'time-colon';
+  colon.textContent = ':';
+
+  const minSel = document.createElement('select');
+  minSel.className = 'time-select';
+  ['00','15','30','45'].forEach(m => {
+    const o = document.createElement('option');
+    o.value = m; o.textContent = m;
+    if (m === state.selectedMin) o.selected = true;
+    minSel.appendChild(o);
+  });
+  minSel.onchange = () => state.selectedMin = minSel.value;
+
+  const ampmWrap = document.createElement('div');
+  ampmWrap.className = 'ampm-wrap';
+  ['AM','PM'].forEach(p => {
+    const b = document.createElement('button');
+    b.className = 'ampm-btn' + (p === state.selectedPer ? ' active' : '');
+    b.textContent = p;
+    b.onclick = () => {
+      state.selectedPer = p;
+      ampmWrap.querySelectorAll('.ampm-btn').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+    };
+    ampmWrap.appendChild(b);
+  });
+
+  timeRow.append(hourSel, colon, minSel, ampmWrap);
+  timeBox.append(timeLabel, timeRow);
+
+  // Next button
+  const nextWrap = document.createElement('div');
+  const nextBtn2 = document.createElement('button');
+  nextBtn2.className = 'btn btn-full ' + (state.selectedDay ? 'btn-primary' : 'btn-disabled');
+  nextBtn2.textContent = 'next 💌';
+
+  function updateNextBtn() {
+    nextBtn2.className = 'btn btn-full ' + (state.selectedDay ? 'btn-primary' : 'btn-disabled');
+    if (state.selectedDay) {
+      nextBtn2.onclick = e => { addRipple(nextBtn2, e); setTimeout(() => goTo('food'), 80); };
+    } else {
+      nextBtn2.onclick = null;
+    }
+  }
+  updateNextBtn();
+  nextWrap.appendChild(nextBtn2);
+
+  const inner = document.createElement('div');
+  inner.className = 'stagger';
+  inner.append(header, calBox, timeBox, nextWrap);
+  card.appendChild(inner);
+  wrap.appendChild(card);
+  return wrap;
+}
+
+/* ── Step 4: Food ─────────────────────────────────────── */
+function buildFood() {
+  const wrap = document.createElement('div');
+  wrap.className = 'step-wrap';
+
+  const card = document.createElement('div');
+  card.className = 'card';
+
+  const header = document.createElement('div');
+  header.style.cssText = 'margin-bottom:18px;';
+  header.innerHTML = `<span style="font-size:2rem;display:block;margin-bottom:4px">🍽️</span>
+    <h2 class="title" style="font-size:1.2rem">what are we feeling?</h2>
+    <p class="subtitle" style="margin-bottom:0">pick your vibe for the night</p>`;
+
+  const grid = document.createElement('div');
+  grid.className = 'food-grid';
+
+  FOODS.forEach((f, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'food-btn' + (state.selectedFood === f.id ? ' selected' : '');
+    btn.style.animationDelay = (i * 0.06) + 's';
+
+    const em = document.createElement('span');
+    em.className = 'food-emoji';
+    em.textContent = f.emoji;
+
+    const lbl = document.createElement('span');
+    lbl.className = 'food-label';
+    lbl.textContent = f.label;
+
+    btn.append(em, lbl);
+    btn.addEventListener('click', () => {
+      state.selectedFood = f.id;
+      grid.querySelectorAll('.food-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      // re-trigger wiggle
+      em.style.animation = 'none';
+      void em.offsetWidth;
+      em.style.animation = '';
+      updateNextBtn2();
+    });
+    grid.appendChild(btn);
+  });
+
+  const nextWrap = document.createElement('div');
+  const nextBtn = document.createElement('button');
+  nextBtn.className = 'btn btn-full ' + (state.selectedFood ? 'btn-primary' : 'btn-disabled');
+  nextBtn.innerHTML = "let's go! 🎉";
+
+  function updateNextBtn2() {
+    nextBtn.className = 'btn btn-full ' + (state.selectedFood ? 'btn-primary' : 'btn-disabled');
+    if (state.selectedFood) {
+      nextBtn.onclick = e => {
+        addRipple(nextBtn, e);
+        setTimeout(() => goTo('finale'), 80);
+      };
+    }
+  }
+  updateNextBtn2();
+  nextWrap.appendChild(nextBtn);
+
+  const inner = document.createElement('div');
+  inner.className = 'stagger';
+  inner.append(header, grid, nextWrap);
+  card.appendChild(inner);
+  wrap.appendChild(card);
+  return wrap;
+}
+
+/* ── Step 5: Finale ───────────────────────────────────── */
+function buildFinale() {
+  const wrap = document.createElement('div');
+  wrap.className = 'step-wrap';
+
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.style.overflow = 'hidden';
+
+  const inner = document.createElement('div');
+  inner.className = 'stagger';
+
+  const em = document.createElement('span');
+  em.className = 'emoji';
+  em.textContent = '🥰';
+  // pop animation after entrance
+  setTimeout(() => {
+    em.style.animation = 'wobble .65s ease-in-out';
+    em.addEventListener('animationend', () => em.style.animation = '', { once: true });
+  }, 550);
+
+  const h2 = document.createElement('h1');
+  h2.className = 'title';
+  h2.textContent = "glad you didn't say no";
+
+  const sub = document.createElement('p');
+  sub.className = 'subtitle';
+  sub.style.marginBottom = '0';
+  sub.textContent = "it's a date! see you on";
+
+  const food = FOODS.find(f => f.id === state.selectedFood);
+  const summaryBox = document.createElement('div');
+  summaryBox.className = 'summary-box';
+
+  const rows = [
+    { icon: '📅', text: `${MONTHS[state.calMonth]} ${state.selectedDay}, ${state.calYear}` },
+    { icon: '🕐', text: `${String(state.selectedHour).padStart(2,'0')}:${state.selectedMin} ${state.selectedPer}` },
+    { icon: food.emoji, text: `${food.label} night` },
+  ];
+  rows.forEach((r, i) => {
+    const row = document.createElement('div');
+    row.className = 'summary-row';
+    row.style.animationDelay = (.38 + i * .1) + 's';
+    row.innerHTML = `<span style="font-size:1rem">${r.icon}</span><span>${r.text}</span>`;
+    summaryBox.appendChild(row);
+  });
+
+  const cant = document.createElement('p');
+  cant.style.cssText = 'font-size:.75rem;color:#aaa;font-style:italic;margin-top:4px;';
+  cant.textContent = "i can't wait 🌸";
+
+  const restart = document.createElement('button');
+  restart.className = 'btn-restart';
+  restart.textContent = 'start over';
+  restart.addEventListener('click', () => {
+    Object.assign(state, {
+      noX:0, noY:0, noAttempts:0,
+      calYear: today.getFullYear(), calMonth: today.getMonth(),
+      selectedDay:null, selectedHour:7,
+      selectedMin:'00', selectedPer:'PM', selectedFood:null,
+    });
+    goTo('ask');
+  });
+
+  inner.append(em, h2, sub, summaryBox, cant, restart);
+  card.appendChild(inner);
+  wrap.appendChild(card);
+
+  enableTilt(card);
+  requestAnimationFrame(() => spawnHearts(card, 16));
+  return wrap;
+}
+
+/* ═══════════════════════════════════════════════════════
+   Dispatch
+═══════════════════════════════════════════════════════ */
+function buildStep(s) {
+  if (s === 'ask')       return buildAsk();
+  if (s === 'surprised') return buildSurprised();
+  if (s === 'date')      return buildDate();
+  if (s === 'food')      return buildFood();
+  if (s === 'finale')    return buildFinale();
+}
+
+/* ── Boot ──────────────────────────────────────────────── */
+const el = buildStep('ask');
+el.style.animation = 'enterScale .45s cubic-bezier(.34,1.2,.64,1) forwards';
+document.getElementById('app').appendChild(el);
+currentStepEl = el;
+</script>
+</body>
+</html>
