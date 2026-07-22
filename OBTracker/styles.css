@@ -228,6 +228,59 @@ nav {
 			transform: translateY(-3px);
 		}
 
+		nav ul .ui-links {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			margin-left: 18px;
+		}
+
+		nav ul .ui-link {
+			border: 1px solid rgba(255, 255, 255, 0.5);
+			border-radius: 999px;
+			padding: 0.45em 0.9em;
+			font-size: 0.85rem;
+			font-weight: 700;
+			line-height: 1;
+		}
+
+		nav ul .ui-link-new {
+			background-color: #ffffff;
+			color: #222222;
+		}
+
+		nav ul .ui-link-old {
+			background-color: transparent;
+			color: #ffffff;
+		}
+
+		nav ul .ui-link:hover,
+		nav ul .ui-link:focus-visible {
+			background-color: #878787;
+			color: #ffffff;
+			outline: 2px solid #ffffff;
+			outline-offset: 2px;
+		}
+
+		@media (max-width: 760px) {
+			nav ul {
+				flex-wrap: wrap;
+				justify-content: center;
+				gap: 2px;
+			}
+
+			nav ul li a {
+				padding: 0.45em 0.6em;
+				font-size: 0.78rem;
+			}
+
+			nav ul .ui-links {
+				width: 100%;
+				justify-content: center;
+				margin: 4px 0 0;
+			}
+		}
+
 		.page {
 			padding: 2em;
 			display: none;
