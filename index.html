@@ -1,261 +1,562 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Lexz — graphics design, server management, computer repair, projects, and social links.">
-    <title>Lexz</title>
-    <link rel="preload" href="fonts/press-start-2p.ttf" as="font" type="font/ttf" crossorigin>
-    <link rel="preload" href="assets/wallpaper.webp" as="image" type="image/webp" fetchpriority="high">
-    <link rel="stylesheet" href="index.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lexz — Alex Zamora</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Sora:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0c10;
+    --bg-grid: rgba(124,92,255,0.05);
+    --surface:#12151c;
+    --surface-raised:#181c26;
+    --border:#232735;
+    --border-soft: rgba(255,255,255,0.06);
+    --violet:#7c5cff;
+    --violet-soft: rgba(124,92,255,0.16);
+    --teal:#2fe6c4;
+    --teal-soft: rgba(47,230,196,0.14);
+    --coral:#ff6b5c;
+    --text:#f2f3f7;
+    --text-muted:#8b90a3;
+    --text-dim:#565c70;
+    --font-display:'Chakra Petch', sans-serif;
+    --font-body:'Sora', sans-serif;
+    --font-mono:'JetBrains Mono', monospace;
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+
+  html{scroll-behavior:smooth;}
+
+  body{
+    background:
+      radial-gradient(circle at 15% 0%, rgba(124,92,255,0.10), transparent 45%),
+      radial-gradient(circle at 85% 20%, rgba(47,230,196,0.07), transparent 40%),
+      var(--bg);
+    color:var(--text);
+    font-family:var(--font-body);
+    line-height:1.5;
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+
+  /* faint grid texture */
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    background-image:
+      linear-gradient(var(--bg-grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--bg-grid) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 90%);
+    pointer-events:none;
+    z-index:0;
+  }
+
+  a{color:inherit; text-decoration:none;}
+
+  .wrap{max-width:1180px; margin:0 auto; padding:0 32px;}
+
+  /* ---------- NAV ---------- */
+  nav{
+    position:sticky; top:0; z-index:50;
+    background:rgba(10,12,16,0.72);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom:1px solid var(--border-soft);
+  }
+  nav .wrap{
+    display:flex; align-items:center; justify-content:space-between;
+    height:72px;
+  }
+  .logo{
+    display:flex; align-items:center; gap:10px;
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:20px;
+    letter-spacing:0.5px;
+  }
+  .logo .dot{
+    width:9px; height:9px; border-radius:50%;
+    background:var(--teal);
+    box-shadow:0 0 10px var(--teal), 0 0 2px var(--teal);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  .navlinks{display:flex; gap:4px; align-items:center;}
+  .navlinks a{
+    font-family:var(--font-mono);
+    font-size:12px;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    color:var(--text-muted);
+    padding:9px 14px;
+    border-radius:6px;
+    transition:.2s ease;
+  }
+  .navlinks a:hover{color:var(--text); background:var(--surface-raised);}
+  .navlinks a.planner{
+    color:var(--violet);
+    border:1px solid rgba(124,92,255,0.35);
+  }
+  .navlinks a.planner:hover{background:var(--violet-soft); color:var(--text);}
+  .navtoggle{display:none;}
+
+  @keyframes pulse{
+    0%,100%{opacity:1; transform:scale(1);}
+    50%{opacity:.5; transform:scale(0.8);}
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative; z-index:1;
+    padding:96px 0 72px;
+  }
+  .hero .wrap{
+    display:grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap:64px;
+    align-items:center;
+  }
+
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:var(--font-mono);
+    font-size:12px;
+    letter-spacing:2px;
+    color:var(--teal);
+    text-transform:uppercase;
+    margin-bottom:22px;
+    opacity:0;
+    animation: fadeUp .7s ease forwards;
+  }
+  .eyebrow .dot{
+    width:7px; height:7px; border-radius:50%; background:var(--teal);
+    box-shadow:0 0 8px var(--teal);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+
+  .hero h1{
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:clamp(44px, 6vw, 72px);
+    line-height:1.02;
+    letter-spacing:-0.5px;
+    color:var(--text);
+    opacity:0;
+    animation: fadeUp .7s ease .08s forwards;
+  }
+  .hero h1 span{
+    background: linear-gradient(90deg, var(--violet), var(--teal));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+
+  .handle{
+    font-family:var(--font-mono);
+    color:var(--text-dim);
+    font-size:15px;
+    margin-top:10px;
+    opacity:0;
+    animation: fadeUp .7s ease .16s forwards;
+  }
+
+  .roles{
+    display:flex; flex-wrap:wrap; gap:10px;
+    margin:28px 0 34px;
+    opacity:0;
+    animation: fadeUp .7s ease .24s forwards;
+  }
+  .role-badge{
+    display:flex; align-items:center; gap:8px;
+    padding:9px 14px;
+    border:1px solid var(--border);
+    border-radius:8px;
+    background:var(--surface);
+    font-size:13.5px;
+    color:var(--text-muted);
+  }
+  .role-badge .tag{
+    font-family:var(--font-mono);
+    font-size:10px;
+    letter-spacing:1px;
+    color:var(--violet);
+    background:var(--violet-soft);
+    padding:2px 6px;
+    border-radius:4px;
+  }
+
+  .cta-row{
+    display:flex; gap:14px; flex-wrap:wrap;
+    opacity:0;
+    animation: fadeUp .7s ease .32s forwards;
+  }
+  .btn{
+    font-family:var(--font-display);
+    font-weight:600;
+    font-size:14.5px;
+    letter-spacing:0.5px;
+    padding:14px 26px;
+    border-radius:9px;
+    cursor:pointer;
+    transition:.2s ease;
+    display:inline-flex; align-items:center; gap:8px;
+  }
+  .btn-primary{
+    background:linear-gradient(135deg, var(--violet), #5b3fe0);
+    color:#fff;
+    border:1px solid transparent;
+    box-shadow:0 0 0 rgba(124,92,255,0);
+  }
+  .btn-primary:hover{
+    box-shadow:0 8px 26px -6px rgba(124,92,255,0.55);
+    transform:translateY(-1px);
+  }
+  .btn-secondary{
+    background:transparent;
+    color:var(--text);
+    border:1px solid var(--border);
+  }
+  .btn-secondary:hover{
+    border-color:var(--teal);
+    color:var(--teal);
+    background:var(--teal-soft);
+  }
+
+  @keyframes fadeUp{
+    from{opacity:0; transform:translateY(14px);}
+    to{opacity:1; transform:translateY(0);}
+  }
+
+  /* ---------- HUD CARD ---------- */
+  .hud-card{
+    position:relative;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:22px;
+    opacity:0;
+    animation: fadeUp .8s ease .2s forwards;
+  }
+  .hud-frame{
+    position:relative;
+    border-radius:12px;
+    overflow:hidden;
+    aspect-ratio:1/1;
+    background:#000;
+    isolation:isolate;
+  }
+  .hud-frame img{
+    width:100%; height:100%; object-fit:cover;
+    display:block;
+    filter:saturate(1.05) contrast(1.02);
+  }
+  .hud-frame::after{
+    content:"";
+    position:absolute; inset:0;
+    background:linear-gradient(180deg, transparent 60%, rgba(10,12,16,0.75) 100%);
+  }
+  .corner{
+    position:absolute; width:22px; height:22px; z-index:3;
+    border-color:var(--teal);
+  }
+  .corner.tl{top:10px; left:10px; border-top:2px solid; border-left:2px solid; border-radius:4px 0 0 0;}
+  .corner.tr{top:10px; right:10px; border-top:2px solid; border-right:2px solid; border-radius:0 4px 0 0;}
+  .corner.bl{bottom:10px; left:10px; border-bottom:2px solid; border-left:2px solid; border-radius:0 0 0 4px;}
+  .corner.br{bottom:10px; right:10px; border-bottom:2px solid; border-right:2px solid; border-radius:0 0 4px 0;}
+
+  .scanline{
+    position:absolute; left:0; right:0; height:2px; z-index:2;
+    background:linear-gradient(90deg, transparent, var(--teal), transparent);
+    opacity:0;
+    top:0;
+  }
+  .hud-frame:hover .scanline{
+    opacity:.85;
+    animation: scan 1.6s linear infinite;
+  }
+  @keyframes scan{
+    0%{top:0%;}
+    100%{top:100%;}
+  }
+
+  .hud-tag{
+    position:absolute; top:20px; left:20px; z-index:3;
+    font-family:var(--font-mono);
+    font-size:10.5px;
+    letter-spacing:1px;
+    color:var(--teal);
+    background:rgba(10,12,16,0.55);
+    padding:4px 8px;
+    border-radius:5px;
+    border:1px solid rgba(47,230,196,0.35);
+  }
+
+  .hud-name{
+    position:absolute; bottom:16px; left:20px; right:20px; z-index:3;
+    font-family:var(--font-display);
+    font-weight:600;
+    font-size:19px;
+    color:#fff;
+  }
+  .hud-name small{
+    display:block;
+    font-family:var(--font-mono);
+    font-weight:400;
+    font-size:11px;
+    color:var(--text-muted);
+    letter-spacing:1px;
+    margin-top:2px;
+  }
+
+  .stat-list{
+    margin-top:18px;
+    display:flex; flex-direction:column; gap:0;
+  }
+  .stat-row{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:11px 2px;
+    border-top:1px solid var(--border-soft);
+    font-size:13px;
+  }
+  .stat-row .k{
+    font-family:var(--font-mono);
+    color:var(--text-dim);
+    letter-spacing:.5px;
+    font-size:11px;
+    text-transform:uppercase;
+  }
+  .stat-row .v{color:var(--text-muted); font-weight:500;}
+  .stat-row .v.on{color:var(--teal);}
+
+  /* ---------- CONNECT ---------- */
+  .connect{
+    position:relative; z-index:1;
+    padding:40px 0 110px;
+  }
+  .connect-head{
+    display:flex; align-items:baseline; gap:16px; margin-bottom:28px;
+  }
+  .connect-head h2{
+    font-family:var(--font-display);
+    font-size:26px;
+    font-weight:600;
+  }
+  .connect-head .line{
+    flex:1; height:1px; background:var(--border);
+  }
+  .connect-head .count{
+    font-family:var(--font-mono);
+    font-size:12px;
+    color:var(--text-dim);
+  }
+
+  .social-grid{
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    gap:14px;
+  }
+  .social-card{
+    position:relative;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:20px 18px;
+    display:flex; align-items:center; gap:14px;
+    transition:.22s ease;
+    overflow:hidden;
+  }
+  .social-card::before{
+    content:"";
+    position:absolute; inset:0;
+    background:var(--glow, transparent);
+    opacity:0;
+    transition:.22s ease;
+  }
+  .social-card:hover{
+    transform:translateY(-3px);
+    border-color:var(--accent, var(--violet));
+  }
+  .social-card:hover::before{opacity:0.10;}
+  .social-icon{
+    width:38px; height:38px; flex:none;
+    display:flex; align-items:center; justify-content:center;
+    border-radius:9px;
+    background:var(--surface-raised);
+    color:var(--accent, var(--text-muted));
+    position:relative; z-index:1;
+    transition:.22s ease;
+  }
+  .social-card:hover .social-icon{background:var(--accent, var(--violet)); color:#0a0c10;}
+  .social-icon svg{width:19px; height:19px;}
+  .social-meta{position:relative; z-index:1;}
+  .social-meta .name{
+    font-family:var(--font-display);
+    font-weight:600;
+    font-size:14.5px;
+  }
+  .social-meta .handle{
+    font-family:var(--font-mono);
+    font-size:11px;
+    color:var(--text-dim);
+    margin-top:2px;
+  }
+
+  /* ---------- FOOTER ---------- */
+  footer{
+    border-top:1px solid var(--border-soft);
+    padding:26px 0;
+    position:relative; z-index:1;
+  }
+  footer .wrap{
+    display:flex; justify-content:space-between; align-items:center;
+    font-family:var(--font-mono);
+    font-size:11.5px;
+    color:var(--text-dim);
+  }
+  footer .status{display:flex; align-items:center; gap:8px;}
+  footer .status .dot{
+    width:6px; height:6px; border-radius:50%; background:var(--teal);
+    box-shadow:0 0 6px var(--teal);
+  }
+
+  @media (max-width: 880px){
+    .hero .wrap{grid-template-columns:1fr; gap:44px;}
+    .hud-card{max-width:360px; margin:0 auto;}
+    .social-grid{grid-template-columns:repeat(2,1fr);}
+    .navlinks{display:none;}
+  }
+  @media (max-width: 480px){
+    .wrap{padding:0 20px;}
+    .social-grid{grid-template-columns:1fr;}
+    .cta-row{flex-direction:column; align-items:stretch;}
+    .btn{justify-content:center;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important;}
+    html{scroll-behavior:auto;}
+  }
+</style>
 </head>
-<body class="min-h-screen">
-    <!-- CRT overlay effect -->
-	<div class="background-overlay"></div>
-	<div class="fixed inset-0 pointer-events-none crt z-50"></div>
-    
-    <!-- Header -->
-    <header class="sticky fixed z-50 top-0 bg-stone-600 text-white py-4 px-6 pixel-border"><!---->
-        <div class="container mx-auto flex flex-col md:flex-row justify-between items-center">
-            <div class="flex items-center mb-4 md:mb-0">
-                <svg class="gamepad-icon text-3xl mr-3" viewBox="0 0 32 24" aria-hidden="true"><path d="M8 3h16a7 7 0 0 1 6.7 9l-2 6.7A3.2 3.2 0 0 1 23 20l-2.2-3h-9.6L9 20a3.2 3.2 0 0 1-5.7-1.3l-2-6.7A7 7 0 0 1 8 3Zm1 5v3H6v2h3v3h2v-3h3v-2h-3V8H9Zm14 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm4-3a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"/></svg>
-                <h1 class="text-2xl md:text-3xl">Lexz</h1>
-            </div>
-            <nav class="flex space-x-2 md:space-x-4">
-                <a href="#" class="btn-pixel">Home</a>
-                <a href="#games" class="btn-pixel">Games</a>
-                <a href="#about" class="btn-pixel">About</a>
-                <a href="#contact" class="btn-pixel">Projects</a>
-                <a href="date-planner.html" class="btn-pixel">Date Planner</a>
-            </nav>
-        </div>
-    </header>
-    <!-- Hero Section -->
-    <section class="py-20 px-10"><!--bg-gradient-to-b from-stone-600 to-stone-900-->
-        <div class="container mx-auto flex flex-col md:flex-row items-center justify-center">
-            <div class="min-w-84 md:mb-0">
-                <h2 class="text-3xl md:text-5xl text-yellow-900 mb-4">Alex Zamora</h2>
-                <p class="text-[20px] mb-6 text-black font-semibold">Graphics Designer
-<br>Server Moderator/Management<br>Computer Technician/Repair</p>
-                <div class="flex space-x-4">
-                    <button class="px-4 py-4 btn-pixel bg-green-600 hover:bg-green-700">PLAY NOW</button>
-                    <a href="OBTracker/timer.html" target="_blank" class="px-4 py-4 btn-pixel bg-red-600 hover:bg-red-700">PROJECTS</a>
-                </div>
-            </div>
-            <div class="min-w-80 flex justify-center">
-                <img src="assets/profile-256.webp" alt="Pixel-art portrait of Alex Zamora" width="256" height="256" fetchpriority="high" decoding="async" class="w-64 h-64 pixel-art pixel-border bg-stone-800 p-2">
-            </div>
-        </div>
-    </section>
-    
-    <!-- Featured Games -->
-    <section id="games" class="px-10"><!-- bg-stone-900-->
-        <div class="container mx-auto">
-             <!--<h2 class="text-3xl text-center text-yellow-300 mb-12"></h2>-->
-            <div class="flex flex-wrap justify-center gap-4">
-                    <a href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer" class="px-6 py-2 text-black text-center font-semibold rounded-lg transform hover:-translate-y-2 transition duration-900"><img src="icons/youtube_icon.png" alt="" width="128" height="128" loading="lazy" decoding="async" class="py-5"><span>YOUTUBE</span></a>
-					<a href="https://www.discord.com" target="_blank" rel="noopener noreferrer" class="px-6 py-2 text-black text-center font-semibold rounded-lg transform hover:-translate-y-2 transition duration-900"><img src="icons/discord_icon.png" alt="" width="128" height="128" loading="lazy" decoding="async" class="py-5"><span>DISCORD</span></a>
-					<a href="https://www.github.com" target="_blank" rel="noopener noreferrer" class="px-6 py-2 text-black text-center font-semibold rounded-lg transform hover:-translate-y-2 transition duration-900"><img src="icons/github_icon.png" alt="" width="128" height="128" loading="lazy" decoding="async" class="py-5"><span>GITHUB</span></a>
-					<a href="https://www.Twitch.com" target="_blank" rel="noopener noreferrer" class="px-6 py-2 text-black text-center font-semibold rounded-lg transform hover:-translate-y-2 transition duration-900"><img src="icons/twitch_icon.png" alt="" width="128" height="128" loading="lazy" decoding="async" class="py-5"><span>TWITCH</span></a>
-					<a href="https://www.reddit.com" target="_blank" rel="noopener noreferrer" class="px-6 py-2 text-black text-center font-semibold rounded-lg transform hover:-translate-y-2 transition duration-900"><img src="icons/reddit_icon.png" alt="" width="128" height="128" loading="lazy" decoding="async" class="py-5"><span>REDDIT</span></a>
-					<a href="https://www.kick.com" target="_blank" rel="noopener noreferrer" class="px-6 py-2 text-black text-center font-semibold rounded-lg transform hover:-translate-y-2 transition duration-900"><img src="icons/kick_icon.png" alt="" width="128" height="128" loading="lazy" decoding="async" class="py-5"><span>KICK</span></a>
-					<a href="https://www.steamcommunity.com/iammilkshake" target="_blank" rel="noopener noreferrer" class="px-6 py-2 text-black text-center font-semibold rounded-lg transform hover:-translate-y-2 transition duration-900"><img src="icons/steam.png" alt="" width="128" height="128" loading="lazy" decoding="async" class="py-5"><span>STEAM</span></a>
-            </div>
-        </div>
-    </section>
-    
-    <!-- Stats Section -->
-    <!--<section class="py-12 px-6 bg-stone-950">
-        <div class="container mx-auto">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-                <div class="p-4 pixel-border">
-                    <div class="text-4xl text-yellow-300 mb-2">50+</div>
-                    <div class="text-sm">GAMES</div>
-                </div>
-                <div class="p-4 pixel-border">
-                    <div class="text-4xl text-yellow-300 mb-2">1M+</div>
-                    <div class="text-sm">PLAYERS</div>
-                </div>
-                <div class="p-4 pixel-border">
-                    <div class="text-4xl text-yellow-300 mb-2">24/7</div>
-                    <div class="text-sm">AVAILABLE</div>
-                </div>
-                <div class="p-4 pixel-border">
-                    <div class="text-4xl text-yellow-300 mb-2">100%</div>
-                    <div class="text-sm">FREE TO PLAY</div>
-                </div>
-            </div>
-        </div>
-    </section>-->
-    
-    <!-- Footer -->
-    <footer class="pt-24 text-center">
-    <div class="container mx-auto">
-        <div class="flex justify-center space-x-6 mb-6">
-            <a href="#" class="text-yellow-700 hover:text-white text-2xl" aria-label="Twitter"><img src="icons/twitter_icon.png" alt="" width="24" height="24" loading="lazy" decoding="async"></a>
-            <a href="#" class="text-yellow-700 hover:text-white text-2xl" aria-label="Facebook"><img src="icons/facebook_icon.png" alt="" width="24" height="24" loading="lazy" decoding="async"></a>
-            <a href="#" class="text-yellow-700 hover:text-white text-2xl" aria-label="Instagram"><img src="icons/instagram_icon.png" alt="" width="24" height="24" loading="lazy" decoding="async"></a>
-        </div>
-        <p class="text-gray-700 text-sm mb-4">© 2025 Lexz. ALL RIGHTS RESERVED.</p>
-        <div class="flex justify-center space-x-4 text-xs">
-            <a href="#" class="text-gray-700 hover:text-white">PRIVACY POLICY</a>
-            <a href="#" class="text-gray-700 hover:text-white">TERMS OF SERVICE</a>
-            <a href="#" class="text-gray-700 hover:text-white">COOKIE POLICY</a>
-        </div>
+<body>
+
+<nav>
+  <div class="wrap">
+    <div class="logo"><span class="dot"></span>LEXZ</div>
+    <div class="navlinks">
+      <a href="#home">Home</a>
+      <a href="#games">Games</a>
+      <a href="#about">About</a>
+      <a href="#projects">Projects</a>
+      <a href="#planner" class="planner">Date Planner</a>
     </div>
+  </div>
+</nav>
+
+<section class="hero" id="home">
+  <div class="wrap">
+    <div>
+      <div class="eyebrow"><span class="dot"></span>Status: Online</div>
+      <h1>Alex <span>Zamora</span></h1>
+      <div class="handle">aka LEXZ — designer, moderator, technician</div>
+
+      <div class="roles">
+        <div class="role-badge"><span class="tag">DESIGN</span>Graphics Designer</div>
+        <div class="role-badge"><span class="tag">MOD</span>Server Moderator / Management</div>
+        <div class="role-badge"><span class="tag">TECH</span>Computer Technician / Repair</div>
+      </div>
+
+      <div class="cta-row">
+        <a href="#games" class="btn btn-primary">▶ Play Now</a>
+        <a href="#projects" class="btn btn-secondary">View Projects</a>
+      </div>
+    </div>
+
+    <div class="hud-card">
+      <div class="hud-frame">
+        <span class="hud-tag">P1</span>
+        <img src="assets/avatar.png" alt="Lexz avatar">
+        <div class="scanline"></div>
+        <span class="corner tl"></span>
+        <span class="corner tr"></span>
+        <span class="corner bl"></span>
+        <span class="corner br"></span>
+        <div class="hud-name">Lexz<small>ALEX ZAMORA</small></div>
+      </div>
+      <div class="stat-list">
+        <div class="stat-row"><span class="k">Class</span><span class="v">Designer / Mod / Tech</span></div>
+        <div class="stat-row"><span class="k">Status</span><span class="v on">Online</span></div>
+        <div class="stat-row"><span class="k">Region</span><span class="v">Community Server</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="connect" id="projects">
+  <div class="wrap">
+    <div class="connect-head">
+      <h2>Connect</h2>
+      <div class="line"></div>
+      <div class="count">7 CHANNELS</div>
+    </div>
+
+    <div class="social-grid">
+
+      <a class="social-card" style="--accent:#ff4b4b; --glow:#ff4b4b;" href="#" target="_blank" rel="noopener">
+        <div class="social-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8ZM9.6 15.5V8.5L15.8 12Z"/></svg></div>
+        <div class="social-meta"><div class="name">YouTube</div><div class="handle">/lexz</div></div>
+      </a>
+
+      <a class="social-card" style="--accent:#7c8cff; --glow:#7c8cff;" href="#" target="_blank" rel="noopener">
+        <div class="social-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 4.7A19.5 19.5 0 0 0 15.6 3c-.2.4-.5.9-.7 1.4a18 18 0 0 0-5.8 0c-.2-.5-.5-1-.7-1.4a19.6 19.6 0 0 0-4.7 1.7C.9 9 .1 13.2.5 17.3a19.6 19.6 0 0 0 5.9 3c.5-.6.9-1.3 1.2-2a12.7 12.7 0 0 1-1.9-.9l.5-.4a14 14 0 0 0 11.6 0l.5.4c-.6.4-1.3.7-1.9.9.3.7.7 1.4 1.2 2a19.5 19.5 0 0 0 5.9-3c.5-4.8-.7-9-3.2-12.6ZM8.7 14.7c-1 0-1.9-.9-1.9-2.1s.8-2.1 1.9-2.1c1 0 1.9 1 1.9 2.1 0 1.2-.8 2.1-1.9 2.1Zm6.6 0c-1 0-1.9-.9-1.9-2.1s.8-2.1 1.9-2.1c1.1 0 1.9 1 1.9 2.1 0 1.2-.8 2.1-1.9 2.1Z"/></svg></div>
+        <div class="social-meta"><div class="name">Discord</div><div class="handle">lexz#0001</div></div>
+      </a>
+
+      <a class="social-card" style="--accent:#c9d1d9; --glow:#c9d1d9;" href="#" target="_blank" rel="noopener">
+        <div class="social-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.6-4-1.6-.6-1.3-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2 0 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.4-1.3-5.4-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.4 11.4 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.7 5.6-5.4 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .5Z"/></svg></div>
+        <div class="social-meta"><div class="name">GitHub</div><div class="handle">/lexz</div></div>
+      </a>
+
+      <a class="social-card" style="--accent:#a970ff; --glow:#a970ff;" href="#" target="_blank" rel="noopener">
+        <div class="social-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 2 2 6.5V19h6v3l3.5-3H16l5-5V2Zm15 10.5-3 3h-3.5l-2.5 2.5V15.5H6V4h13Z"/><path d="M14.5 6.5h2V11h-2Zm-4 0h2V11h-2Z"/></svg></div>
+        <div class="social-meta"><div class="name">Twitch</div><div class="handle">/lexz</div></div>
+      </a>
+
+      <a class="social-card" style="--accent:#ff6a3d; --glow:#ff6a3d;" href="#" target="_blank" rel="noopener">
+        <div class="social-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a12 12 0 1 0 12 12A12 12 0 0 0 12 .5Zm5.6 12.9c0 .9-1 1.6-2.3 1.6h-.1a2.6 2.6 0 0 1-2.2 1.2 2.6 2.6 0 0 1-2.2-1.2h-.1c-1.3 0-2.3-.7-2.3-1.6a1.4 1.4 0 0 1 .8-1.2 1.9 1.9 0 0 1 0-.3 1.8 1.8 0 0 1 1.8-1.8 1.8 1.8 0 0 1 1.2.5l1.9-.9-.6-2 1.8-.4.5 2.1a1.8 1.8 0 0 1 1.4.5 1.8 1.8 0 0 1 .5 1.2 1.8 1.8 0 0 1 0 .3 1.4 1.4 0 0 1 .9 1.3ZM9.7 13.3a.9.9 0 1 0 .9-.9.9.9 0 0 0-.9.9Zm4.9-.9a.9.9 0 1 0 .9.9.9.9 0 0 0-.9-.9Zm-.2 2.4a3 3 0 0 1-2.4 1 3 3 0 0 1-2.4-1 .3.3 0 0 1 .5-.3 2.5 2.5 0 0 0 1.9.8 2.5 2.5 0 0 0 1.9-.8.3.3 0 0 1 .5.3Z"/></svg></div>
+        <div class="social-meta"><div class="name">Reddit</div><div class="handle">u/lexz</div></div>
+      </a>
+
+      <a class="social-card" style="--accent:#3ddc84; --glow:#3ddc84;" href="#" target="_blank" rel="noopener">
+        <div class="social-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 3h6v8L15 3h6l-9 9 9 9h-6l-6-8v8H3Z"/></svg></div>
+        <div class="social-meta"><div class="name">Kick</div><div class="handle">/lexz</div></div>
+      </a>
+
+      <a class="social-card" style="--accent:#8fa3c0; --glow:#8fa3c0;" href="#" target="_blank" rel="noopener">
+        <div class="social-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.6 0a11.9 11.9 0 0 0-11.9 10.8l6.4 2.6a3.1 3.1 0 0 1 1.8-.6l2.8-4.1v-.1a4.5 4.5 0 1 1 4.5 4.5h-.1l-4 2.9a3.1 3.1 0 1 1-4.4 2.9l-4.6-1.9A11.9 11.9 0 1 0 11.6 0ZM7.5 18.2l-1.4-.6a2.3 2.3 0 0 0 4.4-.7 2.3 2.3 0 0 0-3-2.1l1.4.6a1.7 1.7 0 0 1-1.4 3.1Zm8.7-9.1a3 3 0 1 1-3-3 3 3 0 0 1 3 3Zm-5.3 0a2.3 2.3 0 1 0 2.3-2.3 2.3 2.3 0 0 0-2.3 2.3Z"/></svg></div>
+        <div class="social-meta"><div class="name">Steam</div><div class="handle">/id/lexz</div></div>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>&copy; <span id="year"></span> Alex Zamora</div>
+    <div class="status"><span class="dot"></span>All systems operational</div>
+  </div>
 </footer>
-    
-    <!-- Floating game console -->
-    <div id="gameLauncher" class="fixed bottom-4 right-4 w-16 h-16 bg-red-600 rounded-full flex items-center justify-center pixel-border cursor-pointer hover:bg-red-700 transition-all z-60">
-        <svg class="gamepad-icon text-2xl text-white" viewBox="0 0 32 24" aria-hidden="true"><path d="M8 3h16a7 7 0 0 1 6.7 9l-2 6.7A3.2 3.2 0 0 1 23 20l-2.2-3h-9.6L9 20a3.2 3.2 0 0 1-5.7-1.3l-2-6.7A7 7 0 0 1 8 3Zm1 5v3H6v2h3v3h2v-3h3v-2h-3V8H9Zm14 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm4-3a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"/></svg>
-    </div>
 
-    <!-- Snake Game Modal -->
-    <div id="gameModal" class="hidden fixed inset-0 bg-black bg-opacity-80 z-[100] flex items-center justify-center p-4">
-        <div class="bg-stone-800 pixel-border p-6 max-w-md w-full text-center">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-yellow-300 text-lg">SNAKE</h3>
-                <button id="closeGame" class="btn-pixel bg-red-700" aria-label="Close">X</button>
-            </div>
-            <p class="text-xs text-gray-300 mb-3">SCORE: <span id="gameScore">0</span></p>
-            <canvas id="gameCanvas" width="320" height="320" class="mx-auto bg-black pixel-border" style="image-rendering: pixelated;"></canvas>
-            <p class="text-[10px] text-gray-400 mt-3">USE ARROW KEYS OR WASD &middot; TAP BUTTONS ON MOBILE</p>
-            <div class="grid grid-cols-3 gap-2 mt-3 max-w-[180px] mx-auto">
-                <div></div>
-                <button class="btn-pixel" data-dir="up">▲</button>
-                <div></div>
-                <button class="btn-pixel" data-dir="left">◀</button>
-                <button id="restartGame" class="btn-pixel bg-green-700">RST</button>
-                <button class="btn-pixel" data-dir="right">▶</button>
-                <div></div>
-                <button class="btn-pixel" data-dir="down">▼</button>
-                <div></div>
-            </div>
-        </div>
-    </div>
-    
-    <script>
-        // Snake game launched from the floating gamepad button
-        (function () {
-            const launcher = document.getElementById('gameLauncher');
-            const modal = document.getElementById('gameModal');
-            const closeBtn = document.getElementById('closeGame');
-            const restartBtn = document.getElementById('restartGame');
-            const canvas = document.getElementById('gameCanvas');
-            const ctx = canvas.getContext('2d');
-            const scoreEl = document.getElementById('gameScore');
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
 
-            const TILE = 16;
-            const COLS = canvas.width / TILE;
-            const ROWS = canvas.height / TILE;
-
-            let snake, dir, nextDir, food, score, loopId, alive;
-
-            function reset() {
-                snake = [{ x: 8, y: 8 }, { x: 7, y: 8 }, { x: 6, y: 8 }];
-                dir = { x: 1, y: 0 };
-                nextDir = dir;
-                score = 0;
-                alive = true;
-                placeFood();
-                scoreEl.textContent = '0';
-            }
-
-            function placeFood() {
-                while (true) {
-                    const f = { x: Math.floor(Math.random() * COLS), y: Math.floor(Math.random() * ROWS) };
-                    if (!snake.some(s => s.x === f.x && s.y === f.y)) { food = f; return; }
-                }
-            }
-
-            function step() {
-                if (!alive) return;
-                if ((nextDir.x !== -dir.x || nextDir.y !== -dir.y)) dir = nextDir;
-                const head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
-                if (head.x < 0 || head.y < 0 || head.x >= COLS || head.y >= ROWS ||
-                    snake.some(s => s.x === head.x && s.y === head.y)) {
-                    alive = false;
-                    draw();
-                    return;
-                }
-                snake.unshift(head);
-                if (head.x === food.x && head.y === food.y) {
-                    score += 10;
-                    scoreEl.textContent = score;
-                    placeFood();
-                } else {
-                    snake.pop();
-                }
-                draw();
-            }
-
-            function draw() {
-                ctx.fillStyle = '#0a0a14';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.fillStyle = '#ef4444';
-                ctx.fillRect(food.x * TILE, food.y * TILE, TILE, TILE);
-                snake.forEach((s, i) => {
-                    ctx.fillStyle = i === 0 ? '#fde047' : '#22c55e';
-                    ctx.fillRect(s.x * TILE, s.y * TILE, TILE - 1, TILE - 1);
-                });
-                if (!alive) {
-                    ctx.fillStyle = 'rgba(0,0,0,0.7)';
-                    ctx.fillRect(0, 0, canvas.width, canvas.height);
-                    ctx.fillStyle = '#fde047';
-                    ctx.font = '20px "Press Start 2P", monospace';
-                    ctx.textAlign = 'center';
-                    ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2);
-                    ctx.font = '10px "Press Start 2P", monospace';
-                    ctx.fillText('PRESS RST', canvas.width / 2, canvas.height / 2 + 24);
-                }
-            }
-
-            function start() {
-                reset();
-                clearInterval(loopId);
-                loopId = setInterval(step, 110);
-                draw();
-            }
-
-            function stop() {
-                clearInterval(loopId);
-                loopId = null;
-            }
-
-            function open() {
-                modal.classList.remove('hidden');
-                start();
-            }
-
-            function close() {
-                modal.classList.add('hidden');
-                stop();
-            }
-
-            launcher.addEventListener('click', open);
-            closeBtn.addEventListener('click', close);
-            restartBtn.addEventListener('click', start);
-
-            modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
-
-            const keyMap = {
-                ArrowUp: { x: 0, y: -1 }, w: { x: 0, y: -1 }, W: { x: 0, y: -1 },
-                ArrowDown: { x: 0, y: 1 }, s: { x: 0, y: 1 }, S: { x: 0, y: 1 },
-                ArrowLeft: { x: -1, y: 0 }, a: { x: -1, y: 0 }, A: { x: -1, y: 0 },
-                ArrowRight: { x: 1, y: 0 }, d: { x: 1, y: 0 }, D: { x: 1, y: 0 },
-            };
-            document.addEventListener('keydown', (e) => {
-                if (modal.classList.contains('hidden')) return;
-                if (keyMap[e.key]) { nextDir = keyMap[e.key]; e.preventDefault(); }
-                if (e.key === 'Escape') close();
-            });
-
-            const dirMap = { up: { x: 0, y: -1 }, down: { x: 0, y: 1 }, left: { x: -1, y: 0 }, right: { x: 1, y: 0 } };
-            document.querySelectorAll('[data-dir]').forEach(b => {
-                b.addEventListener('click', () => { nextDir = dirMap[b.dataset.dir]; });
-            });
-        })();
-    </script>
 </body>
 </html>
-
