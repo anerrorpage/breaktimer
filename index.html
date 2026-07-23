@@ -68,6 +68,22 @@
     mix-blend-mode:screen;
   }
 
+  #bg-letters{
+    position:fixed;
+    inset:0;
+    z-index:0;
+    pointer-events:none;
+    mix-blend-mode:screen;
+  }
+
+  #bg-letters{
+      position:fixed;
+      inset:0;
+      z-index:0;
+      pointer-events:none;
+      mix-blend-mode:screen;
+  }
+
   a{color:inherit; text-decoration:none;}
 
   .wrap{max-width:1180px; margin:0 auto; padding:0 32px;}
@@ -550,7 +566,8 @@
 </style>
 </head>
 <body>
-
+  
+<canvas id="bg-letters" aria-hidden="true"></canvas>
 <canvas id="bg-rain" aria-hidden="true"></canvas>
 
 <nav>
@@ -770,6 +787,57 @@
       cancelAnimationFrame(frameId);
       window.removeEventListener('resize', resize);
     });
+  })();
+
+  /* ---------- faint background letter rain ---------- */
+  (function(){
+    const canvas = document.getElementById('bg-letters');
+    if(!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const glyphs = "01LEXZ<>/{}[]#$%&*".split("");
+    const fontSize = 15;       // larger spacing = fewer, sparser columns
+    const columnGap = 2;       // skip columns for extra sparseness
+    let w, h, columns, drops;
+
+    function resize(){
+      w = canvas.width = window.innerWidth;
+      h = canvas.height = window.innerHeight;
+      columns = Math.ceil(w / (fontSize * columnGap));
+      drops = new Array(columns).fill(0).map(() => Math.floor(Math.random() * -120));
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    function frame(){
+      ctx.fillStyle = 'rgba(10,12,16,0.14)'; // slow fade = sparse, gentle trail
+      ctx.fillRect(0, 0, w, h);
+      ctx.font = fontSize + 'px "JetBrains Mono", monospace';
+      ctx.textBaseline = 'top';
+
+      for(let i = 0; i < columns; i++){
+        if(Math.random() > 0.35) continue; // skip most columns each frame = low density
+        const glyph = glyphs[Math.floor(Math.random() * glyphs.length)];
+        const x = i * fontSize * columnGap;
+        const y = drops[i] * fontSize;
+
+        ctx.fillStyle = (i % 3 === 0) ? 'rgba(124,92,255,0.12)' : 'rgba(47,230,196,0.10)';
+        ctx.fillText(glyph, x, y);
+
+        if(y > h && Math.random() > 0.98){
+          drops[i] = 0;
+        }
+        drops[i]++;
+      }
+    }
+
+    if(reduceMotion){
+      ctx.fillStyle = 'rgba(10,12,16,1)';
+      ctx.fillRect(0, 0, w, h);
+    } else {
+      setInterval(frame, 70);
+    }
   })();
 
   /* ---------- play modal ---------- */
