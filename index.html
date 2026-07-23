@@ -58,6 +58,15 @@
     z-index:0;
   }
 
+  /* animated letter-rain background */
+  #bg-rain{
+    position:fixed;
+    inset:0;
+    z-index:0;
+    pointer-events:none;
+    mix-blend-mode:screen;
+  }
+
   a{color:inherit; text-decoration:none;}
 
   .wrap{max-width:1180px; margin:0 auto; padding:0 32px;}
@@ -442,9 +451,106 @@
     *{animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important;}
     html{scroll-behavior:auto;}
   }
+
+  /* ---------- PLAY MODAL ---------- */
+  .modal-overlay{
+    position:fixed; inset:0; z-index:100;
+    background:rgba(10,12,16,0.75);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    display:flex; align-items:center; justify-content:center;
+    opacity:0; pointer-events:none;
+    transition:.25s ease;
+  }
+  .modal-overlay.active{opacity:1; pointer-events:auto;}
+
+  .modal-box{
+    position:relative;
+    width:min(420px, 90vw);
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:28px;
+    transform:translateY(12px) scale(.98);
+    transition:.25s ease;
+    box-shadow:0 20px 60px -12px rgba(0,0,0,0.6);
+  }
+  .modal-overlay.active .modal-box{transform:translateY(0) scale(1);}
+
+  .modal-close{
+    position:absolute; top:14px; right:14px;
+    width:28px; height:28px;
+    display:flex; align-items:center; justify-content:center;
+    border-radius:7px;
+    color:var(--text-muted);
+    background:var(--surface-raised);
+    border:1px solid var(--border);
+    cursor:pointer;
+    font-family:var(--font-mono);
+    font-size:14px;
+    transition:.2s ease;
+  }
+  .modal-close:hover{color:var(--text); border-color:var(--teal);}
+
+  .modal-eyebrow{
+    font-family:var(--font-mono);
+    font-size:11px; letter-spacing:2px;
+    color:var(--teal);
+    text-transform:uppercase;
+    display:flex; align-items:center; gap:8px;
+    margin-bottom:14px;
+  }
+  .modal-eyebrow .dot{
+    width:7px; height:7px; border-radius:50%; background:var(--teal);
+    box-shadow:0 0 8px var(--teal);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+
+  .modal-title{
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:24px;
+    margin-bottom:18px;
+  }
+
+  .modal-field{
+    display:flex; flex-direction:column; gap:6px;
+    padding:14px 0;
+    border-top:1px solid var(--border-soft);
+  }
+  .modal-field .k{
+    font-family:var(--font-mono);
+    font-size:10.5px; letter-spacing:1px;
+    color:var(--text-dim);
+    text-transform:uppercase;
+  }
+  .modal-field .v{
+    font-family:var(--font-mono);
+    font-size:16px;
+    color:var(--text);
+  }
+
+  .modal-copy{
+    margin-top:20px;
+    width:100%;
+    font-family:var(--font-display);
+    font-weight:600;
+    font-size:13.5px;
+    letter-spacing:.5px;
+    padding:12px;
+    border-radius:9px;
+    border:1px solid var(--border);
+    background:transparent;
+    color:var(--text);
+    cursor:pointer;
+    transition:.2s ease;
+  }
+  .modal-copy:hover{border-color:var(--teal); color:var(--teal); background:var(--teal-soft);}
 </style>
 </head>
 <body>
+
+<canvas id="bg-rain" aria-hidden="true"></canvas>
 
 <nav>
   <div class="wrap">
@@ -473,7 +579,7 @@
       </div>
 
       <div class="cta-row">
-        <a href="#games" class="btn btn-primary">▶ Play Now</a>
+        <a href="#games" class="btn btn-primary" onclick="openPlayModal(event)">▶ Play Now</a>
         <a href="OBTracker/timer.html" class="btn btn-secondary">View Projects</a>
       </div>
     </div>
@@ -508,9 +614,9 @@
 
     <div class="social-grid">
 
-      <a class="social-card" style="--accent:#ff4b4b; --glow:#ff4b4b;" href="#" target="_blank" rel="noopener">
+      <a class="social-card" style="--accent:#ff4b4b; --glow:#ff4b4b;" href="https://www.youtube.com/@2ez4lex" target="_blank" rel="noopener">
         <div class="social-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8ZM9.6 15.5V8.5L15.8 12Z"/></svg></div>
-        <div class="social-meta"><div class="name">YouTube</div><div class="handle">/lexz</div></div>
+        <div class="social-meta"><div class="name">YouTube</div><div class="handle">/su6ar</div></div>
       </a>
 
       <a class="social-card" style="--accent:#7c8cff; --glow:#7c8cff;" href="#" target="_blank" rel="noopener">
@@ -554,8 +660,100 @@
   </div>
 </footer>
 
+<div class="modal-overlay" id="play-modal">
+  <div class="modal-box">
+    <div class="modal-close" onclick="closePlayModal()">✕</div>
+    <div class="modal-eyebrow"><span class="dot"></span>Server Info</div>
+    <div class="modal-title">Vanilla Minecraft 26.1.2</div>
+    <div class="modal-field">
+      <span class="k">Server Address</span>
+      <span class="v" id="server-ip">play.fardogaming.xyz</span>
+    </div>
+    <button class="modal-copy" onclick="copyServerIP()">Copy IP</button>
+  </div>
+</div>
+
 <script>
   document.getElementById('year').textContent = new Date().getFullYear();
+
+  /* ---------- animated letter-rain background ---------- */
+  (function(){
+    const canvas = document.getElementById('bg-rain');
+    if(!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const glyphs = "01LEXZ<>/{}[]#$%&*ｦｱｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾂﾃﾅﾆﾇﾈﾊﾋﾎﾏﾐﾑﾒﾓﾔﾕﾗﾘﾜ".split("");
+    const fontSize = 10;
+    let w, h, columns, drops;
+
+    function resize(){
+      w = canvas.width = window.innerWidth;
+      h = canvas.height = window.innerHeight;
+      columns = Math.ceil(w / fontSize);
+      drops = new Array(columns).fill(0).map(() => Math.floor(Math.random() * -80));
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    function frame(){
+      // trailing fade — repaints the bg colour at low alpha over the previous frame
+      ctx.fillStyle = 'rgba(10,12,16,0.07)';
+      ctx.fillRect(0, 0, w, h);
+      ctx.font = fontSize + 'px "JetBrains Mono", monospace';
+      ctx.textBaseline = 'top';
+
+      for(let i = 0; i < columns; i++){
+        const glyph = glyphs[Math.floor(Math.random() * glyphs.length)];
+        const x = i * fontSize;
+        const y = drops[i] * fontSize;
+
+        ctx.fillStyle = (i % 3 === 0) ? 'rgba(124,92,255,0.55)' : 'rgba(47,230,196,0.45)';
+        ctx.fillText(glyph, x, y);
+
+        if(y > h && Math.random() > 0.975){
+          drops[i] = 0;
+        }
+        drops[i]++;
+      }
+    }
+
+    if(reduceMotion){
+      // single static, very faint pass — no motion, no strobing
+      ctx.fillStyle = 'rgba(10,12,16,1)';
+      ctx.fillRect(0, 0, w, h);
+      for(let i = 0; i < columns; i++){
+        const glyph = glyphs[Math.floor(Math.random() * glyphs.length)];
+        ctx.font = fontSize + 'px "JetBrains Mono", monospace';
+        ctx.fillStyle = (i % 3 === 0) ? 'rgba(124,92,255,0.18)' : 'rgba(47,230,196,0.16)';
+        ctx.fillText(glyph, i * fontSize, Math.random() * h);
+      }
+    } else {
+      setInterval(frame, 55);
+    }
+  })();
+
+  /* ---------- play modal ---------- */
+  function openPlayModal(e){
+    if(e) e.preventDefault();
+    document.getElementById('play-modal').classList.add('active');
+  }
+  function closePlayModal(){
+    document.getElementById('play-modal').classList.remove('active');
+  }
+  document.getElementById('play-modal').addEventListener('click', function(e){
+    if(e.target === this) closePlayModal();
+  });
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape') closePlayModal();
+  });
+  function copyServerIP(){
+    navigator.clipboard.writeText(document.getElementById('server-ip').textContent);
+    const btn = document.querySelector('.modal-copy');
+    const original = btn.textContent;
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = original, 1500);
+  }
 </script>
 
 </body>
