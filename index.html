@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lexz — Alex Zamora</title>
+<link rel="icon" type="image/webp" href="assets/profile-256.webp">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Sora:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -624,7 +625,7 @@
         <div class="social-meta"><div class="name">Discord</div><div class="handle">lexz#0001</div></div>
       </a>
 
-      <a class="social-card" style="--accent:#c9d1d9; --glow:#c9d1d9;" href="#" target="_blank" rel="noopener">
+      <a class="social-card" style="--accent:#c9d1d9; --glow:#c9d1d9;" href="https://github.com/anerrorpage" target="_blank" rel="noopener">
         <div class="social-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.6-4-1.6-.6-1.3-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2 0 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.4-1.3-5.4-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.4 11.4 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.7 5.6-5.4 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .5Z"/></svg></div>
         <div class="social-meta"><div class="name">GitHub</div><div class="handle">/lexz</div></div>
       </a>
@@ -676,7 +677,7 @@
 <script>
   document.getElementById('year').textContent = new Date().getFullYear();
 
-  /* ---------- animated letter-rain background ---------- */
+  /* ---------- animated letter-globe background ---------- */
   (function(){
     const canvas = document.getElementById('bg-rain');
     if(!canvas) return;
@@ -684,52 +685,89 @@
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     const glyphs = "01LEXZ<>/{}[]#$%&*ｦｱｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾂﾃﾅﾆﾇﾈﾊﾋﾎﾏﾐﾑﾒﾓﾔﾕﾗﾘﾜ".split("");
-    const fontSize = 10;
-    let w, h, columns, drops;
+    const POINT_COUNT = 240;
+    let w, h, cx, cy, radius, points;
+    let angleY = 0, angleX = 0.4, angleZ = 0;
+
+    function fibonacciSphere(samples){
+      const pts = [];
+      const goldenAngle = Math.PI * (3 - Math.sqrt(5));
+      for(let i = 0; i < samples; i++){
+        const y = 1 - (i / (samples - 1)) * 2;
+        const r = Math.sqrt(1 - y * y);
+        const theta = goldenAngle * i;
+        pts.push({
+          x: Math.cos(theta) * r,
+          y: y,
+          z: Math.sin(theta) * r,
+          glyph: glyphs[Math.floor(Math.random() * glyphs.length)]
+        });
+      }
+      return pts;
+    }
 
     function resize(){
       w = canvas.width = window.innerWidth;
       h = canvas.height = window.innerHeight;
-      columns = Math.ceil(w / fontSize);
-      drops = new Array(columns).fill(0).map(() => Math.floor(Math.random() * -80));
+      cx = w / 2;
+      cy = h / 2;
+      radius = Math.min(w, h) * 0.32;
     }
     resize();
     window.addEventListener('resize', resize);
+    points = fibonacciSphere(POINT_COUNT);
+
+    function rotate(p, ay, ax, az){
+      // rotate around Y
+      const cosY = Math.cos(ay), sinY = Math.sin(ay);
+      const x1 = p.x * cosY - p.z * sinY;
+      const z1 = p.x * sinY + p.z * cosY;
+      // rotate around X
+      const cosX = Math.cos(ax), sinX = Math.sin(ax);
+      const y1 = p.y * cosX - z1 * sinX;
+      const z2 = p.y * sinX + z1 * cosX;
+      // rotate around Z
+      const cosZ = Math.cos(az), sinZ = Math.sin(az);
+      const x2 = x1 * cosZ - y1 * sinZ;
+      const y2 = x1 * sinZ + y1 * cosZ;
+      return { x: x2, y: y2, z: z2, glyph: p.glyph };
+    }
 
     function frame(){
-      // trailing fade — repaints the bg colour at low alpha over the previous frame
-      ctx.fillStyle = 'rgba(10,12,16,0.07)';
-      ctx.fillRect(0, 0, w, h);
-      ctx.font = fontSize + 'px "JetBrains Mono", monospace';
-      ctx.textBaseline = 'top';
+      ctx.clearRect(0, 0, w, h);
+      const fov = 420;
+      const projected = points.map((p, i) => {
+        const r = rotate(p, angleY, angleX, angleZ);
+        const perspective = fov / (fov + r.z * radius);
+        return {
+          x: cx + r.x * radius * perspective,
+          y: cy + r.y * radius * perspective,
+          z: r.z,
+          glyph: p.glyph,
+          idx: i
+        };
+      }).sort((a, b) => a.z - b.z);
 
-      for(let i = 0; i < columns; i++){
-        const glyph = glyphs[Math.floor(Math.random() * glyphs.length)];
-        const x = i * fontSize;
-        const y = drops[i] * fontSize;
+      projected.forEach(p => {
+        const depth = (p.z + 1) / 2; // 0 = back, 1 = front
+        const alpha = 0.15 + depth * 0.75;
+        const size = 9 + depth * 9;
+        ctx.font = size.toFixed(1) + 'px "JetBrains Mono", monospace';
+        ctx.fillStyle = (p.idx % 3 === 0)
+          ? `rgba(124,92,255,${alpha})`
+          : `rgba(47,230,196,${alpha})`;
+        ctx.fillText(p.glyph, p.x, p.y);
+      });
 
-        ctx.fillStyle = (i % 3 === 0) ? 'rgba(124,92,255,0.55)' : 'rgba(47,230,196,0.45)';
-        ctx.fillText(glyph, x, y);
-
-        if(y > h && Math.random() > 0.975){
-          drops[i] = 0;
-        }
-        drops[i]++;
-      }
+      angleY += 0.0032;
+      angleX += 0.0017;
+      angleZ += 0.0009;
     }
 
     if(reduceMotion){
-      // single static, very faint pass — no motion, no strobing
-      ctx.fillStyle = 'rgba(10,12,16,1)';
-      ctx.fillRect(0, 0, w, h);
-      for(let i = 0; i < columns; i++){
-        const glyph = glyphs[Math.floor(Math.random() * glyphs.length)];
-        ctx.font = fontSize + 'px "JetBrains Mono", monospace';
-        ctx.fillStyle = (i % 3 === 0) ? 'rgba(124,92,255,0.18)' : 'rgba(47,230,196,0.16)';
-        ctx.fillText(glyph, i * fontSize, Math.random() * h);
-      }
+      frame();
     } else {
-      setInterval(frame, 55);
+      setInterval(frame, 40);
     }
   })();
 
