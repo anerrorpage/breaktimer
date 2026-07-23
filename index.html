@@ -685,9 +685,11 @@
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     const glyphs = "01LEXZ<>/{}[]#$%&*ｦｱｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾂﾃﾅﾆﾇﾈﾊﾋﾎﾏﾐﾑﾒﾓﾔﾕﾗﾘﾜ".split("");
-    const POINT_COUNT = 240;
+    const POINT_COUNT = 260;
+    const LINK_DIST = 0.55;   // max 3D distance to draw a connecting line
     let w, h, cx, cy, radius, points;
     let angleY = 0, angleX = 0.4, angleZ = 0;
+    let targetTiltX = 0, targetTiltY = 0, tiltX = 0, tiltY = 0;
 
     function fibonacciSphere(samples){
       const pts = [];
@@ -711,22 +713,24 @@
       h = canvas.height = window.innerHeight;
       cx = w / 2;
       cy = h / 2;
-      radius = Math.min(w, h) * 0.32;
+      radius = Math.min(w, h) * 0.34;
     }
     resize();
     window.addEventListener('resize', resize);
     points = fibonacciSphere(POINT_COUNT);
 
+    window.addEventListener('pointermove', (e) => {
+      targetTiltY = ((e.clientX / w) - 0.5) * 0.6;
+      targetTiltX = ((e.clientY / h) - 0.5) * 0.6;
+    });
+
     function rotate(p, ay, ax, az){
-      // rotate around Y
       const cosY = Math.cos(ay), sinY = Math.sin(ay);
       const x1 = p.x * cosY - p.z * sinY;
       const z1 = p.x * sinY + p.z * cosY;
-      // rotate around X
       const cosX = Math.cos(ax), sinX = Math.sin(ax);
       const y1 = p.y * cosX - z1 * sinX;
       const z2 = p.y * sinX + z1 * cosX;
-      // rotate around Z
       const cosZ = Math.cos(az), sinZ = Math.sin(az);
       const x2 = x1 * cosZ - y1 * sinZ;
       const y2 = x1 * sinZ + y1 * cosZ;
@@ -734,37 +738,70 @@
     }
 
     function frame(){
-      ctx.clearRect(0, 0, w, h);
+      // soft trailing fade instead of a hard clear — gives motion a slight glow trail
+      ctx.fillStyle = 'rgba(10,12,16,0.22)';
+      ctx.fillRect(0, 0, w, h);
+
+      tiltX += (targetTiltX - tiltX) * 0.04;
+      tiltY += (targetTiltY - tiltY) * 0.04;
+
       const fov = 420;
       const projected = points.map((p, i) => {
-        const r = rotate(p, angleY, angleX, angleZ);
+        const r = rotate(p, angleY + tiltY, angleX + tiltX, angleZ);
         const perspective = fov / (fov + r.z * radius);
         return {
           x: cx + r.x * radius * perspective,
           y: cy + r.y * radius * perspective,
-          z: r.z,
+          z: r.z, rx: r.x, ry: r.y,
           glyph: p.glyph,
           idx: i
         };
-      }).sort((a, b) => a.z - b.z);
-
-      projected.forEach(p => {
-        const depth = (p.z + 1) / 2; // 0 = back, 1 = front
-        const alpha = 0.15 + depth * 0.75;
-        const size = 9 + depth * 9;
-        ctx.font = size.toFixed(1) + 'px "JetBrains Mono", monospace';
-        ctx.fillStyle = (p.idx % 3 === 0)
-          ? `rgba(124,92,255,${alpha})`
-          : `rgba(47,230,196,${alpha})`;
-        ctx.fillText(p.glyph, p.x, p.y);
       });
 
-      angleY += 0.0032;
-      angleX += 0.0017;
-      angleZ += 0.0009;
+      // constellation links between nearby front-facing points
+      ctx.lineWidth = 0.6;
+      for(let i = 0; i < projected.length; i++){
+        const a = projected[i];
+        if(a.z < -0.1) continue;
+        for(let j = i + 1; j < projected.length; j++){
+          const b = projected[j];
+          if(b.z < -0.1) continue;
+          const dx = a.rx - b.rx, dy = a.ry - b.ry, dz = a.z - b.z;
+          const d = Math.sqrt(dx*dx + dy*dy + dz*dz);
+          if(d < LINK_DIST){
+            const depth = (a.z + b.z + 2) / 4;
+            ctx.strokeStyle = `rgba(124,92,255,${0.05 + depth * 0.12})`;
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.stroke();
+          }
+        }
+      }
+
+      projected.sort((a, b) => a.z - b.z);
+      projected.forEach(p => {
+        const depth = (p.z + 1) / 2;
+        const alpha = 0.15 + depth * 0.8;
+        const size = 9 + depth * 10;
+        const color = (p.idx % 3 === 0) ? '124,92,255' : '47,230,196';
+
+        ctx.font = size.toFixed(1) + 'px "JetBrains Mono", monospace';
+        ctx.shadowColor = `rgba(${color},${alpha})`;
+        ctx.shadowBlur = 6 + depth * 10;
+        ctx.fillStyle = `rgba(${color},${alpha})`;
+        ctx.fillText(p.glyph, p.x, p.y);
+      });
+      ctx.shadowBlur = 0;
+
+      angleY += 0.0026;
+      angleX += 0.0014;
+      angleZ += 0.0008;
     }
 
     if(reduceMotion){
+      ctx.fillStyle = 'rgba(10,12,16,1)';
+      ctx.fillRect(0, 0, w, h);
       frame();
     } else {
       setInterval(frame, 40);
