@@ -677,135 +677,99 @@
 <script>
   document.getElementById('year').textContent = new Date().getFullYear();
 
-  /* ---------- animated letter-globe background ---------- */
+  /* ---------- animated ASCII letter-globe background ---------- */
   (function(){
     const canvas = document.getElementById('bg-rain');
     if(!canvas) return;
     const ctx = canvas.getContext('2d');
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    const glyphs = "01LEXZ<>/{}[]#$%&*ｦｱｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾂﾃﾅﾆﾇﾈﾊﾋﾎﾏﾐﾑﾒﾓﾔﾕﾗﾘﾜ".split("");
-    const POINT_COUNT = 260;
-    const LINK_DIST = 0.55;   // max 3D distance to draw a connecting line
-    let w, h, cx, cy, radius, points;
-    let angleY = 0, angleX = 0.4, angleZ = 0;
-    let targetTiltX = 0, targetTiltY = 0, tiltX = 0, tiltY = 0;
-
-    function fibonacciSphere(samples){
-      const pts = [];
-      const goldenAngle = Math.PI * (3 - Math.sqrt(5));
-      for(let i = 0; i < samples; i++){
-        const y = 1 - (i / (samples - 1)) * 2;
-        const r = Math.sqrt(1 - y * y);
-        const theta = goldenAngle * i;
-        pts.push({
-          x: Math.cos(theta) * r,
-          y: y,
-          z: Math.sin(theta) * r,
-          glyph: glyphs[Math.floor(Math.random() * glyphs.length)]
-        });
-      }
-      return pts;
-    }
+    const chars = "░▒▓█▀▄▌▐│─┤├┴┬╭╮╰╯";
+    let time = 0;
+    let frameId = 0;
+    let w, h;
 
     function resize(){
-      w = canvas.width = window.innerWidth;
-      h = canvas.height = window.innerHeight;
-      cx = w / 2;
-      cy = h / 2;
-      radius = Math.min(w, h) * 0.34;
-    }
-    resize();
-    window.addEventListener('resize', resize);
-    points = fibonacciSphere(POINT_COUNT);
-
-    window.addEventListener('pointermove', (e) => {
-      targetTiltY = ((e.clientX / w) - 0.5) * 0.6;
-      targetTiltX = ((e.clientY / h) - 0.5) * 0.6;
-    });
-
-    function rotate(p, ay, ax, az){
-      const cosY = Math.cos(ay), sinY = Math.sin(ay);
-      const x1 = p.x * cosY - p.z * sinY;
-      const z1 = p.x * sinY + p.z * cosY;
-      const cosX = Math.cos(ax), sinX = Math.sin(ax);
-      const y1 = p.y * cosX - z1 * sinX;
-      const z2 = p.y * sinX + z1 * cosX;
-      const cosZ = Math.cos(az), sinZ = Math.sin(az);
-      const x2 = x1 * cosZ - y1 * sinZ;
-      const y2 = x1 * sinZ + y1 * cosZ;
-      return { x: x2, y: y2, z: z2, glyph: p.glyph };
+      const dpr = window.devicePixelRatio || 1;
+      w = window.innerWidth;
+      h = window.innerHeight;
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      canvas.style.width = w + 'px';
+      canvas.style.height = h + 'px';
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.scale(dpr, dpr);
     }
 
-    function frame(){
-      // soft trailing fade instead of a hard clear — gives motion a slight glow trail
-      ctx.fillStyle = 'rgba(10,12,16,0.22)';
-      ctx.fillRect(0, 0, w, h);
+    function render(){
+      ctx.clearRect(0, 0, w, h);
+      const centerX = w / 2;
+      const centerY = h / 2;
+      // radius is 48% of the smaller dimension (width or height)
+      const radius = Math.min(w, h) * 0.48;
 
-      tiltX += (targetTiltX - tiltX) * 0.04;
-      tiltY += (targetTiltY - tiltY) * 0.04;
+      ctx.font = "13px 'JetBrains Mono', monospace";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
 
-      const fov = 420;
-      const projected = points.map((p, i) => {
-        const r = rotate(p, angleY + tiltY, angleX + tiltX, angleZ);
-        const perspective = fov / (fov + r.z * radius);
-        return {
-          x: cx + r.x * radius * perspective,
-          y: cy + r.y * radius * perspective,
-          z: r.z, rx: r.x, ry: r.y,
-          glyph: p.glyph,
-          idx: i
-        };
-      });
+      const points = [];
+      for(let phi = 0; phi < Math.PI * 2; phi += 0.15){
+        for(let theta = 0; theta < Math.PI; theta += 0.15){
+          const x = Math.sin(theta) * Math.cos(phi + time * 0.5);
+          const y = Math.sin(theta) * Math.sin(phi + time * 0.5);
+          const z = Math.cos(theta);
 
-      // constellation links between nearby front-facing points
-      ctx.lineWidth = 0.6;
-      for(let i = 0; i < projected.length; i++){
-        const a = projected[i];
-        if(a.z < -0.1) continue;
-        for(let j = i + 1; j < projected.length; j++){
-          const b = projected[j];
-          if(b.z < -0.1) continue;
-          const dx = a.rx - b.rx, dy = a.ry - b.ry, dz = a.z - b.z;
-          const d = Math.sqrt(dx*dx + dy*dy + dz*dz);
-          if(d < LINK_DIST){
-            const depth = (a.z + b.z + 2) / 4;
-            ctx.strokeStyle = `rgba(124,92,255,${0.05 + depth * 0.12})`;
-            ctx.beginPath();
-            ctx.moveTo(a.x, a.y);
-            ctx.lineTo(b.x, b.y);
-            ctx.stroke();
-          }
+          // rotate around Y axis
+          const rotY = time * 0.12;
+          const newX = x * Math.cos(rotY) - z * Math.sin(rotY);
+          const newZ = x * Math.sin(rotY) + z * Math.cos(rotY);
+
+          // rotate around X axis
+          const rotX = time * 0.8;
+          const newY = y * Math.cos(rotX) - newZ * Math.sin(rotX);
+          const finalZ = y * Math.sin(rotX) + newZ * Math.cos(rotX);
+
+          const depth = (finalZ + 1) / 2;
+          const charIndex = Math.floor(depth * (chars.length - 1));
+
+          points.push({
+            x: centerX + newX * radius,
+            y: centerY + newY * radius,
+            z: finalZ,
+            char: chars[charIndex],
+            violet: (Math.round(phi * 10) + Math.round(theta * 10)) % 2 === 0
+          });
         }
       }
 
-      projected.sort((a, b) => a.z - b.z);
-      projected.forEach(p => {
-        const depth = (p.z + 1) / 2;
-        const alpha = 0.15 + depth * 0.8;
-        const size = 9 + depth * 10;
-        const color = (p.idx % 3 === 0) ? '124,92,255' : '47,230,196';
+      points.sort((a, b) => a.z - b.z);
 
-        ctx.font = size.toFixed(1) + 'px "JetBrains Mono", monospace';
-        ctx.shadowColor = `rgba(${color},${alpha})`;
-        ctx.shadowBlur = 6 + depth * 10;
+      points.forEach((point) => {
+        const alpha = 0.15 + (point.z + 1) * 0.35;
+        const color = point.violet ? '124,92,255' : '47,230,196';
         ctx.fillStyle = `rgba(${color},${alpha})`;
-        ctx.fillText(p.glyph, p.x, p.y);
+        ctx.fillText(point.char, point.x, point.y);
       });
-      ctx.shadowBlur = 0;
 
-      angleY += 0.0026;
-      angleX += 0.0014;
-      angleZ += 0.0008;
+    // schedule next frame
+      time += 0.006;
+      frameId = requestAnimationFrame(render);
     }
+
+    resize();
+    window.addEventListener('resize', resize);
 
     if(reduceMotion){
-      ctx.fillStyle = 'rgba(10,12,16,1)';
-      ctx.fillRect(0, 0, w, h);
-      frame();
+      render();
+      cancelAnimationFrame(frameId); // draw one static frame only
     } else {
-      setInterval(frame, 40);
+      render();
     }
+
+    window.addEventListener('beforeunload', function(){
+      cancelAnimationFrame(frameId);
+      window.removeEventListener('resize', resize);
+    });
   })();
 
   /* ---------- play modal ---------- */
