@@ -469,6 +469,77 @@
     html{scroll-behavior:auto;}
   }
 
+  /* ---------- CONTACT ---------- */
+  .contact{
+    position:relative; z-index:1;
+    padding:60px 0 110px;
+  }
+  .contact-head{
+    display:flex; align-items:center; gap:10px;
+    margin-bottom:14px;
+  }
+  .contact-head .index{
+    font-family:var(--font-mono);
+    font-size:12px;
+    color:var(--text-dim);
+  }
+  .contact-head .index-label{
+    font-family:var(--font-mono);
+    font-size:12px;
+    letter-spacing:1.5px;
+    color:var(--teal);
+    text-transform:uppercase;
+  }
+  .contact-title{
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:clamp(36px, 5vw, 56px);
+    letter-spacing:-0.5px;
+    margin-bottom:28px;
+  }
+  .contact-line{
+    height:1px;
+    background:var(--border);
+    margin-bottom:36px;
+  }
+  .contact-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:16px;
+  }
+  .contact-card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:22px 20px;
+  }
+  .contact-card-label{
+    font-family:var(--font-mono);
+    font-size:11px;
+    letter-spacing:1px;
+    color:var(--text-dim);
+    text-transform:uppercase;
+    margin-bottom:12px;
+  }
+  .contact-card-value{
+    font-family:var(--font-body);
+    font-weight:500;
+    font-size:16px;
+    color:var(--text);
+    line-height:1.5;
+  }
+  .contact-card-value.link{
+    color:var(--teal);
+    text-decoration:underline;
+    text-underline-offset:3px;
+    word-break:break-all;
+  }
+  .contact-card-value.link:hover{color:var(--text);}
+
+  @media (max-width: 880px){
+    .contact-grid{grid-template-columns:1fr;}
+  }
+
   /* ---------- PLAY MODAL ---------- */
   .modal-overlay{
     position:fixed; inset:0; z-index:100;
@@ -575,8 +646,8 @@
     <div class="logo"><span class="dot"></span>LEXZ</div>
     <div class="navlinks">
       <a href="#home">Home</a>
-      <a href="#games">Games</a>
-      <a href="#about">About</a>
+      <a href="#connect">Connect</a>
+      <a href="#contact">Contact</a>
       <a href="OBTracker/timer.html">Projects</a>
       <a href="#planner" class="planner">Date Planner</a>
     </div>
@@ -622,10 +693,10 @@
   </div>
 </section>
 
-<section class="connect" id="projects">
+<section class="connect" id="connect">
   <div class="wrap">
     <div class="connect-head">
-      <h2>Connect</h2>
+      <h2 class="connect-title">Connect.</h2>
       <div class="line"></div>
       <div class="count">7 CHANNELS</div>
     </div>
@@ -667,6 +738,32 @@
         <div class="social-meta"><div class="name">Steam</div><div class="handle">/id/lexz</div></div>
       </a>
 
+    </div>
+  </div>
+</section>
+
+<section class="contact" id="contact">
+  <div class="wrap">
+    <div class="contact-head">
+      <span class="index">[04]</span>
+      <span class="index-label">Contact</span>
+    </div>
+    <h2 class="contact-title">Get in touch.</h2>
+    <div class="contact-line"></div>
+
+    <div class="contact-grid">
+      <div class="contact-card">
+        <div class="contact-card-label">// Inquiries</div>
+        <a href="mailto:zamorajralex@gmail.com" class="contact-card-value link">zamorajralex@gmail.com</a>
+      </div>
+      <div class="contact-card">
+        <div class="contact-card-label">// Location</div>
+        <div class="contact-card-value">Cabangcalan 1, Bulacao Cebu City</div>
+      </div>
+      <div class="contact-card">
+        <div class="contact-card-label">// Status</div>
+        <div class="contact-card-value">Open for design &amp; mod work</div>
+      </div>
     </div>
   </div>
 </section>
